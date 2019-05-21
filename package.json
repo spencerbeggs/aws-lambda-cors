@@ -1,0 +1,52 @@
+{
+  "name": "@spencerbeggs/aws-lambda-cors",
+  "description": "Utility module for basic handling cross-origin resource responses in serverless AWS Lambda functions attaches to API Gateway.",
+  "version": "0.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "author": "C. Spencer Beggs <spencer@beg.gs>",
+  "scripts": {
+    "jest": "jest"
+  },
+  "keywords": [
+    "AWS",
+    "Lambda",
+    "CORS",
+    "API Gateway",
+    "serverless"
+  ],
+  "bugs": {
+    "url": "https://github.com/spencerbeggs/aws-lambda-cors/issues",
+    "email": "spencer@beg.gs"
+  },
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg"
+      ],
+      [
+        "@pika/plugin-build-node"
+      ],
+      [
+        "@pika/plugin-bundle-node",
+        {
+          "minNodeVersion": "10"
+        }
+      ]
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@pika/plugin-build-node": "^0.4.0",
+    "@pika/plugin-bundle-node": "^0.4.0",
+    "@pika/plugin-standard-pkg": "^0.4.0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^24.8.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.8.0",
+    "prettier": "^1.17.1"
+  }
+}

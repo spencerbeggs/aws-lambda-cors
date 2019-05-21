@@ -1,0 +1,55 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "globals": {
+    "AWS": true,
+    "getOriginFromEvent": true,
+    "createOriginHeader": true,
+    "cors": true,
+    "allowedOrigins": true,
+    "getSecrets": true,
+    "slack": true,
+    "test": true,
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "jest": true,
+    "beforeEach": true,
+    "afterEach": true
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "max-len": ["warn", { "code": 125, "ignoreStrings": true }],
+    "linebreak-style": ["error", "unix"],
+    "no-undef": ["error"],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "err"
+      }
+    ],
+    "quotes": [
+      "error",
+      "double",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "no-console": 0,
+    "no-fallthrough": 0,
+    "arrow-body-style": ["error", "as-needed"]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": ["prettier"],
+  "extends": ["prettier"]
+}
