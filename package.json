@@ -6,6 +6,7 @@
   "license": "MIT",
   "author": "C. Spencer Beggs <spencer@beg.gs>",
   "scripts": {
+    "build": "pack build",
     "jest": "jest"
   },
   "keywords": [
@@ -15,9 +16,13 @@
     "API Gateway",
     "serverless"
   ],
+  "homepage": "https://https://github.com/spencerbeggs/aws-lambda-cors#readme",
   "bugs": {
     "url": "https://github.com/spencerbeggs/aws-lambda-cors/issues",
     "email": "spencer@beg.gs"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "@pika/pack": {
     "pipeline": [
