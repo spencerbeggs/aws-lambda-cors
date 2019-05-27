@@ -1,7 +1,7 @@
 import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
 import { createOriginHeader, createPreflightResponse } from "./header";
 
-export const cors = (event, callback, opts = {}) => {
+export const cors = (event, context = {}, callback, opts = {}) => {
   let options = Object.assign(
     {
       allowedOrigins: process.env.CORS_ALLOWED_ORIGINS || "*",
@@ -27,6 +27,7 @@ export const cors = (event, callback, opts = {}) => {
         headers: createOriginHeader(origin, options.allowedOrigins)
       },
       data: event.body || null,
+      context,
       callback,
       event
     };
