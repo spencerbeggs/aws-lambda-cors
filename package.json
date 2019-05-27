@@ -7,7 +7,9 @@
   "author": "C. Spencer Beggs <spencer@beg.gs>",
   "scripts": {
     "build": "pack build",
-    "jest": "jest"
+    "jest": "jest",
+    "publish": "pack publish",
+    "test": "jest"
   },
   "keywords": [
     "AWS",
@@ -43,6 +45,7 @@
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
+    "@pika/pack": "^0.3.7",
     "@pika/plugin-build-node": "^0.4.0",
     "@pika/plugin-bundle-node": "^0.4.0",
     "@pika/plugin-standard-pkg": "^0.4.0",

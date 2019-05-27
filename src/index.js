@@ -1,7 +1,7 @@
 import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
 import { createOriginHeader, createPreflightResponse } from "./header";
 
-export const cors = (event, context = {}, callback, opts = {}) => {
+export const cors = (event, context, callback, opts = {}) => {
   let options = Object.assign(
     {
       allowedOrigins: process.env.CORS_ALLOWED_ORIGINS || "*",
@@ -9,7 +9,7 @@ export const cors = (event, context = {}, callback, opts = {}) => {
         process.env.CORS_ALLOWED_METHODS || DEFAULT_ALLOWED_METHODS,
       allowedHeaders:
         process.env.CORS_ALLOWED_HEADERS || DEFAULT_ALLOWED_HEADERS,
-      maxAge: "600"
+      maxAge: process.env.CORS_MAX_AGE || "600"
     },
     opts
   );
@@ -19,7 +19,7 @@ export const cors = (event, context = {}, callback, opts = {}) => {
   }, {});
   let origin = lowerCaseHeaders.origin;
   if (event.httpMethod.toLowerCase() === "options") {
-    callback(null, createPreflightResponse(origin));
+    return callback(null, createPreflightResponse(origin, options));
   } else {
     let res = {
       response: {

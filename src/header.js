@@ -30,17 +30,21 @@ export const createOriginHeader = (
 };
 
 export const createPreflightResponse = (origin, opts = {}) => {
-  let { allowedMethods, allowedHeaders, maxAge } = Object.assign(
+  let {
+    allowedMethods,
+    allowedHeaders,
+    allowedOrigins,
+    maxAge
+  } = Object.assign(
     {
       allowedMethods:
         process.env.CORS_ALLOWED_METHODS || DEFAULT_ALLOWED_METHODS,
       allowedHeaders:
         process.env.CORS_ALLOWED_HEADERS || DEFAULT_ALLOWED_HEADERS,
-      maxAge: "600"
+      maxAge: process.env.CORS_MAX_AGE || "600"
     },
     opts
   );
-
   if (typeof allowedMethods === "string") {
     allowedMethods = allowedMethods.split(",");
   }
@@ -48,10 +52,14 @@ export const createPreflightResponse = (origin, opts = {}) => {
   if (typeof allowedHeaders === "string") {
     allowedHeaders = allowedHeaders.split(",");
   }
-  let headers = Object.assign(createOriginHeader(origin), {
+  let res = {
+    statusCode: 204,
+    headers: {}
+  };
+  Object.assign(res.headers, createOriginHeader(origin, allowedOrigins), {
     "Access-Control-Allow-Headers": allowedHeaders.join(","),
     "Access-Control-Allow-Methods": allowedMethods.join(","),
     "Access-Control-Max-Age": maxAge
   });
-  return { headers, statusCode: 204 };
+  return res;
 };

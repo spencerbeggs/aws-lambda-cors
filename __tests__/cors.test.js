@@ -73,7 +73,33 @@ describe("CORS", () => {
       process.env = OLD_ENV;
     });
 
-    it("it sets max age header if option is passed", () => {
+    it("it sets Access-Control-Allow-Headers if opts.allowedHeaders is passed", () => {
+      let result = createPreflightResponse("https://foo.com", {
+        allowedHeaders: ["X-Foo", "X-Bar"]
+      });
+      expect(result).toEqual(
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            "Access-Control-Allow-Headers": "X-Foo,X-Bar"
+          })
+        })
+      );
+    });
+
+    it("it sets Access-Control-Allow-Methods if opts.allowedMethods is passed", () => {
+      let result = createPreflightResponse("https://foo.com", {
+        allowedMethods: ["GET", "DELETE"]
+      });
+      expect(result).toEqual(
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            "Access-Control-Allow-Methods": "GET,DELETE"
+          })
+        })
+      );
+    });
+
+    it("it sets Access-Control-Max-Age header if opts.maxAge option is passed", () => {
       let result = createPreflightResponse("https://foo.com", {
         maxAge: "200"
       });
@@ -136,9 +162,10 @@ describe("CORS", () => {
   });
 
   describe("Event handling", () => {
-    let callback, event;
+    let event, context, callback;
 
     beforeEach(() => {
+      context = {};
       event = {
         httpMethod: "POST",
         path: "/foobar",
@@ -147,11 +174,12 @@ describe("CORS", () => {
         }
       };
       callback = jest.fn();
+      console.log = jest.fn();
     });
 
     it("it callsback with a 204 response if the HTTP method is OPTIONS", () => {
       event.httpMethod = "OPTIONS";
-      cors(event, callback);
+      cors(event, context, callback);
       expect(callback.mock.calls.length).toBe(1);
       expect(callback).toHaveBeenCalledWith(
         null,
@@ -164,7 +192,7 @@ describe("CORS", () => {
     it("it ignores case of Origin header", () => {
       delete event.headers.Origin;
       event.headers.origin = "https://foobar.com";
-      let result = cors(event, callback);
+      let result = cors(event, context, callback);
       expect(callback.mock.calls.length).toBe(0);
       expect(result).toEqual(
         expect.objectContaining({
@@ -180,7 +208,7 @@ describe("CORS", () => {
     it("it parses the body of the request into a JSON object if Content-Type header contains 'application/json'", () => {
       event.headers["Content-Type"] = "application/json";
       event.body = '{"foo": "bar"}';
-      let result = cors(event, callback);
+      let result = cors(event, context, callback);
       expect(callback.mock.calls.length).toBe(0);
       expect(result).toEqual(
         expect.objectContaining({
@@ -191,11 +219,10 @@ describe("CORS", () => {
       );
     });
 
-    it("it returns the raw event body as data if it cannot be parsed as JSON when Content-Type header contains 'application/json'", () => {
+    it("it returns the raw event.body as data if it cannot be parsed as JSON when Content-Type header contains 'application/json'", () => {
       event.headers["Content-Type"] = "application/json";
-      event.body = '{"foo: "bar"}';
-      console.log = jest.fn();
-      let result = cors(event, callback);
+      event.body = "brokenJson";
+      let result = cors(event, context, callback);
       expect(callback.mock.calls.length).toBe(0);
       expect(result).toEqual(
         expect.objectContaining({
@@ -205,8 +232,8 @@ describe("CORS", () => {
       expect(console.log.mock.calls.length).toBe(1);
     });
 
-    it("it returns a response object, original event, and original callback", () => {
-      let result = cors(event, callback);
+    it("it returns a response object, original event, original context, original callback and data", () => {
+      let result = cors(event, context, callback);
       expect(callback.mock.calls.length).toBe(0);
       expect(result).toEqual(
         expect.objectContaining({
@@ -214,7 +241,32 @@ describe("CORS", () => {
             statusCode: 200
           }),
           callback: callback,
-          event: event
+          context: context,
+          event: event,
+          data: null
+        })
+      );
+    });
+
+    it("it accepts an options object { allowedOrigins, allowedMethods, allowedHeaders, maxAge }", () => {
+      event.httpMethod = "OPTIONS";
+      cors(event, context, callback, {
+        allowedOrigins: "https://foobar.com",
+        allowedMethods: ["PUT", "PATCH"],
+        allowedHeaders: "X-Allowed",
+        maxAge: "333"
+      });
+      expect(callback.mock.calls.length).toBe(1);
+      expect(callback).toHaveBeenCalledWith(
+        null,
+        expect.objectContaining({
+          statusCode: 204,
+          headers: expect.objectContaining({
+            "Access-Control-Allow-Origin": "https://foobar.com",
+            "Access-Control-Allow-Methods": "PUT,PATCH",
+            "Access-Control-Allow-Headers": "X-Allowed",
+            "Access-Control-Max-Age": "333"
+          })
         })
       );
     });
