@@ -65,6 +65,10 @@ const options = {
 
 You can also set the options by passing values to `process.env`: `process.env.CORS_ALLOWED_ORIGINS`, `process.env.CORS_ALLOWED_METHODS`, `process.env.CORS_ALLOWED_HEADERS` and `process.env.CORS_MAX_AGE`.
 
+### Example CloudFormation Template
+
+Below is a simple CloudFormation template that uses [AWS:Serverless Transform](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-aws-serverless.html) that attaches API Gateway to a serverless function handler for your API endpoint. Note that both the `POST` and `OPTIONS` events point to the same code bundle as this module provides the CORS handling for both.
+
 ```yml
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
@@ -87,11 +91,15 @@ Resources:
   MyFunction:
     Type: "AWS::Serverless::Function"
     Properties:
-      CodeUri: ./myfunction/
+      CodeUri: s3://my-lambda-functions-bucket/myfunction.zip
       Handler: index.handler
       Runtime: nodejs10.x
       Role: !GetAtt Role.Arn
       Timeout: 3
+      Environment:
+        Variables:
+          CORS_ALLOWED_ORIGINS: "https://siteone.com,https://sitetwo.com"
+          CORS_ALLOWED_METHODS: "POST"
       Events:
         post:
           Type: Api
