@@ -1,3 +1,4 @@
+import process from "process";
 import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
 import { createOriginHeader, createPreflightResponse } from "./header";
 
