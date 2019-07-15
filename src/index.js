@@ -1,6 +1,6 @@
 import process from "process";
 import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
-import { createOriginHeader, createPreflightResponse } from "./header";
+import { createOriginHeader, createCORSHeader } from "./header";
 
 export const cors = (event, context, callback, opts = {}) => {
   let options = Object.assign(
@@ -20,7 +20,10 @@ export const cors = (event, context, callback, opts = {}) => {
   }, {});
   let origin = lowerCaseHeaders.origin;
   if (event.httpMethod.toLowerCase() === "options") {
-    return callback(null, createPreflightResponse(origin, options));
+    return callback(null, {
+      statusCode: 204,
+      headers: createCORSHeader(origin, options)
+    });
   } else {
     let res = {
       response: {
@@ -32,6 +35,10 @@ export const cors = (event, context, callback, opts = {}) => {
       callback,
       event
     };
+    if (!res.response.headers["Access-Control-Allow-Origin"]) {
+      res.response.statusCode = 401;
+      return callback(null, res.response);
+    }
     if (
       lowerCaseHeaders["content-type"] &&
       lowerCaseHeaders["content-type"].startsWith("application/json")

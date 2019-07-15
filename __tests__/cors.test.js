@@ -1,4 +1,4 @@
-import { createOriginHeader, createPreflightResponse } from "../src/header";
+import { createOriginHeader, createCORSHeader } from "../src/header";
 import { cors } from "../src/index";
 
 describe("CORS", () => {
@@ -62,99 +62,58 @@ describe("CORS", () => {
 
   describe("Preflight header handling", () => {
     const OLD_ENV = process.env;
+    let event,
+      context,
+      callback,
+      options = {
+        allowedOrigins: "https://foobar.com"
+      };
 
     beforeEach(() => {
       jest.resetModules();
       process.env = { ...OLD_ENV };
       delete process.env.NODE_ENV;
+      context = {};
+      event = {
+        httpMethod: "OPTIONS",
+        path: "/foobar",
+        headers: {
+          Origin: "https://foobar.com"
+        }
+      };
+      callback = jest.fn();
+      //console.log = jest.fn();
     });
 
     afterEach(() => {
       process.env = OLD_ENV;
     });
 
-    it("it sets Access-Control-Allow-Headers if opts.allowedHeaders is passed", () => {
-      let result = createPreflightResponse("https://foo.com", {
-        allowedHeaders: ["X-Foo", "X-Bar"]
-      });
-      expect(result).toEqual(
+    it("it calls back with a 204 response if the HTTP method is OPTIONS", () => {
+      cors(event, context, callback, options);
+      expect(callback.mock.calls.length).toBe(1);
+      expect(callback).toHaveBeenCalledWith(
+        null,
         expect.objectContaining({
+          statusCode: 204,
           headers: expect.objectContaining({
-            "Access-Control-Allow-Headers": "X-Foo,X-Bar"
+            "Access-Control-Allow-Origin": "https://foobar.com"
           })
         })
       );
     });
 
-    it("it sets Access-Control-Allow-Methods if opts.allowedMethods is passed", () => {
-      let result = createPreflightResponse("https://foo.com", {
-        allowedMethods: ["GET", "DELETE"]
-      });
-      expect(result).toEqual(
+    it("it ignores case of Origin header", () => {
+      delete event.headers.Origin;
+      event.headers.origin = "https://foobar.com";
+      cors(event, context, callback, options);
+      expect(callback.mock.calls.length).toBe(1);
+      expect(callback).toHaveBeenCalledWith(
+        null,
         expect.objectContaining({
+          statusCode: 204,
           headers: expect.objectContaining({
-            "Access-Control-Allow-Methods": "GET,DELETE"
-          })
-        })
-      );
-    });
-
-    it("it sets Access-Control-Max-Age header if opts.maxAge option is passed", () => {
-      let result = createPreflightResponse("https://foo.com", {
-        maxAge: "200"
-      });
-      expect(result).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            "Access-Control-Max-Age": "200"
-          })
-        })
-      );
-    });
-
-    it("it uses process.env.CORS_ALLOWED_HEADERS env variable is set", () => {
-      process.env.CORS_ALLOWED_HEADERS = ["X-Foobar", "X-Baz"];
-      let result = createPreflightResponse("https://foo.com");
-      expect(result).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            "Access-Control-Allow-Headers": "X-Foobar,X-Baz"
-          })
-        })
-      );
-    });
-
-    it("it splits allowedHeaders into an array if a string is passed", () => {
-      process.env.CORS_ALLOWED_HEADERS = "X-Foobar,X-Baz";
-      let result = createPreflightResponse("https://foo.com");
-      expect(result).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            "Access-Control-Allow-Headers": "X-Foobar,X-Baz"
-          })
-        })
-      );
-    });
-
-    it("it uses process.env.CORS_ALLOWED_METHODS env variable is set", () => {
-      process.env.CORS_ALLOWED_METHODS = ["PUT", "DELETE"];
-      let result = createPreflightResponse("https://foo.com");
-      expect(result).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            "Access-Control-Allow-Methods": "PUT,DELETE"
-          })
-        })
-      );
-    });
-
-    it("it splits allowedMethods into an array if a string is passed", () => {
-      process.env.CORS_ALLOWED_METHODS = "PUT,DELETE";
-      let result = createPreflightResponse("https://foo.com");
-      expect(result).toEqual(
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            "Access-Control-Allow-Methods": "PUT,DELETE"
+            "Access-Control-Allow-Origin": "https://foobar.com"
           })
         })
       );
@@ -177,30 +136,75 @@ describe("CORS", () => {
       console.log = jest.fn();
     });
 
-    it("it callsback with a 204 response if the HTTP method is OPTIONS", () => {
-      event.httpMethod = "OPTIONS";
-      cors(event, context, callback);
-      expect(callback.mock.calls.length).toBe(1);
-      expect(callback).toHaveBeenCalledWith(
-        null,
+    it("it sets Access-Control-Allow-Headers if opts.allowedHeaders is passed", () => {
+      let result = createCORSHeader("https://foo.com", {
+        allowedHeaders: ["X-Foo", "X-Bar"]
+      });
+      expect(result).toEqual(
         expect.objectContaining({
-          statusCode: 204
+          "Access-Control-Allow-Headers": "X-Foo,X-Bar"
         })
       );
     });
 
-    it("it ignores case of Origin header", () => {
-      delete event.headers.Origin;
-      event.headers.origin = "https://foobar.com";
-      let result = cors(event, context, callback);
-      expect(callback.mock.calls.length).toBe(0);
+    it("it sets Access-Control-Allow-Methods if opts.allowedMethods is passed", () => {
+      let result = createCORSHeader("https://foo.com", {
+        allowedMethods: ["GET", "DELETE"]
+      });
       expect(result).toEqual(
         expect.objectContaining({
-          response: expect.objectContaining({
-            headers: expect.objectContaining({
-              "Access-Control-Allow-Origin": "*"
-            })
-          })
+          "Access-Control-Allow-Methods": "GET,DELETE"
+        })
+      );
+    });
+
+    it("it sets Access-Control-Max-Age header if opts.maxAge option is passed", () => {
+      let result = createCORSHeader("https://foo.com", {
+        maxAge: "200"
+      });
+      expect(result).toEqual(
+        expect.objectContaining({
+          "Access-Control-Max-Age": "200"
+        })
+      );
+    });
+
+    it("it uses process.env.CORS_ALLOWED_HEADERS env variable is set", () => {
+      process.env.CORS_ALLOWED_HEADERS = ["X-Foobar", "X-Baz"];
+      let result = createCORSHeader("https://foo.com");
+      expect(result).toEqual(
+        expect.objectContaining({
+          "Access-Control-Allow-Headers": "X-Foobar,X-Baz"
+        })
+      );
+    });
+
+    it("it splits allowedHeaders into an array if a string is passed", () => {
+      process.env.CORS_ALLOWED_HEADERS = "X-Foobar,X-Baz";
+      let result = createCORSHeader("https://foo.com");
+      expect(result).toEqual(
+        expect.objectContaining({
+          "Access-Control-Allow-Headers": "X-Foobar,X-Baz"
+        })
+      );
+    });
+
+    it("it uses process.env.CORS_ALLOWED_METHODS env variable is set", () => {
+      process.env.CORS_ALLOWED_METHODS = ["PUT", "DELETE"];
+      let result = createCORSHeader("https://foo.com");
+      expect(result).toEqual(
+        expect.objectContaining({
+          "Access-Control-Allow-Methods": "PUT,DELETE"
+        })
+      );
+    });
+
+    it("it splits allowedMethods into an array if a string is passed", () => {
+      process.env.CORS_ALLOWED_METHODS = "PUT,DELETE";
+      let result = createCORSHeader("https://foo.com");
+      expect(result).toEqual(
+        expect.objectContaining({
+          "Access-Control-Allow-Methods": "PUT,DELETE"
         })
       );
     });
@@ -267,6 +271,19 @@ describe("CORS", () => {
             "Access-Control-Allow-Headers": "X-Allowed",
             "Access-Control-Max-Age": "333"
           })
+        })
+      );
+    });
+
+    it("returns a 401 response if the allowed origin does not match", () => {
+      cors(event, context, callback, {
+        allowedOrigins: "https://anothersite.com"
+      });
+      expect(callback.mock.calls.length).toBe(1);
+      expect(callback).toHaveBeenCalledWith(
+        null,
+        expect.objectContaining({
+          statusCode: 401
         })
       );
     });

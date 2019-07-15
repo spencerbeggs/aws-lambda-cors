@@ -29,7 +29,7 @@ export const createOriginHeader = (
   return {};
 };
 
-export const createPreflightResponse = (origin, opts = {}) => {
+export const createCORSHeader = (origin, opts = {}) => {
   let {
     allowedMethods,
     allowedHeaders,
@@ -52,14 +52,9 @@ export const createPreflightResponse = (origin, opts = {}) => {
   if (typeof allowedHeaders === "string") {
     allowedHeaders = allowedHeaders.split(",");
   }
-  let res = {
-    statusCode: 204,
-    headers: {}
-  };
-  Object.assign(res.headers, createOriginHeader(origin, allowedOrigins), {
+  return Object.assign(createOriginHeader(origin, allowedOrigins), {
     "Access-Control-Allow-Headers": allowedHeaders.join(","),
     "Access-Control-Allow-Methods": allowedMethods.join(","),
     "Access-Control-Max-Age": maxAge
   });
-  return res;
 };
