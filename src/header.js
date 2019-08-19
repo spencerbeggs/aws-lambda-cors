@@ -13,9 +13,6 @@ export const createOriginHeader = (
   origin,
   allowedOrigins = process.env.CORS_ALLOWED_ORIGINS || "*"
 ) => {
-  if (!origin) {
-    return {};
-  }
   if (allowedOrigins === "*") {
     return { "Access-Control-Allow-Origin": allowedOrigins };
   } else if (typeof allowedOrigins === "string") {
