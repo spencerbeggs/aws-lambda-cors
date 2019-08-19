@@ -1,7 +1,7 @@
 {
   "name": "@spencerbeggs/aws-lambda-cors",
   "description": "Utility module for basic handling cross-origin resource responses in serverless AWS Lambda functions attaches to API Gateway.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "src/index.js",
   "license": "MIT",
   "author": "C. Spencer Beggs <spencer@beg.gs>",
