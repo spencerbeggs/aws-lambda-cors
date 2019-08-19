@@ -1,4 +1,5 @@
-import { createOriginHeader, createCORSHeader } from "../src/header";
+import { createCORSHeader, createOriginHeader } from "../src/header";
+
 import { cors } from "../src/index";
 
 describe("CORS", () => {

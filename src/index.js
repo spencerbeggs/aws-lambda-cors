@@ -1,6 +1,7 @@
-import process from "process";
 import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
-import { createOriginHeader, createCORSHeader } from "./header";
+import { createCORSHeader, createOriginHeader } from "./header";
+
+import process from "process";
 
 export const cors = (event, context, callback, opts = {}) => {
   let options = Object.assign(
@@ -10,7 +11,8 @@ export const cors = (event, context, callback, opts = {}) => {
         process.env.CORS_ALLOWED_METHODS || DEFAULT_ALLOWED_METHODS,
       allowedHeaders:
         process.env.CORS_ALLOWED_HEADERS || DEFAULT_ALLOWED_HEADERS,
-      maxAge: process.env.CORS_MAX_AGE || "600"
+      maxAge: process.env.CORS_MAX_AGE || "600",
+      strict: true
     },
     opts
   );
@@ -35,7 +37,10 @@ export const cors = (event, context, callback, opts = {}) => {
       callback,
       event
     };
-    if (!res.response.headers["Access-Control-Allow-Origin"]) {
+    if (
+      !res.response.headers["Access-Control-Allow-Origin"] &&
+      options.strict
+    ) {
       res.response.statusCode = 401;
       return callback(null, res.response);
     }
