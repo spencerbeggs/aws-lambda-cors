@@ -1,5 +1,5 @@
 import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
-import { createCORSHeader, createOriginHeader } from "./header";
+import { createCORSHeader, createOptionsHeader } from "./header";
 
 import process from "process";
 
@@ -24,13 +24,13 @@ export const cors = (event, context, callback, opts = {}) => {
   if (event.httpMethod.toLowerCase() === "options") {
     return callback(null, {
       statusCode: 204,
-      headers: createCORSHeader(origin, options)
+      headers: createOptionsHeader(origin, options)
     });
   } else {
     let res = {
       response: {
         statusCode: 200,
-        headers: createOriginHeader(origin, options.allowedOrigins)
+        headers: createCORSHeader(origin, options)
       },
       data: event.body || null,
       context,
