@@ -10,7 +10,8 @@
     "jest": "jest",
     "publish": "pack publish",
     "push": "pack build && pack publish",
-    "test": "jest"
+    "test": "jest",
+    "upgrade-interactive": "npm-check --update"
   },
   "keywords": [
     "AWS",
@@ -46,16 +47,17 @@
   "devDependencies": {
     "@babel/core": "^7.5.4",
     "@babel/preset-env": "^7.5.4",
-    "@pika/pack": "^0.3.7",
-    "@pika/plugin-build-node": "^0.4.0",
-    "@pika/plugin-bundle-node": "^0.4.0",
-    "@pika/plugin-standard-pkg": "^0.4.0",
-    "babel-eslint": "^10.0.2",
+    "@pika/pack": "^0.5.0",
+    "@pika/plugin-build-node": "^0.6.0",
+    "@pika/plugin-bundle-node": "^0.6.0",
+    "@pika/plugin-standard-pkg": "^0.6.0",
+    "babel-eslint": "^10.0.3",
     "babel-jest": "^24.8.0",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^4.3.0",
+    "eslint": "^6.3.0",
+    "eslint-config-prettier": "^6.2.0",
     "eslint-plugin-prettier": "^3.1.0",
     "jest": "^24.8.0",
+    "npm-check": "^5.9.0",
     "prettier": "^1.18.2"
   }
 }

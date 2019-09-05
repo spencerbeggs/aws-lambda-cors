@@ -1,4 +1,9 @@
-import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
+import {
+  CORS_SAFELISTED_HEADERS,
+  DEFAULT_ALLOWED_HEADERS,
+  DEFAULT_ALLOWED_METHODS,
+  FORBIDDEN_HEADERS
+} from "./constants";
 
 export const wildcards = url => {
   const urlUnreservedPattern = "[A-Za-z0-9-._~]";
@@ -56,76 +61,43 @@ export const parseOptions = (opts = {}) => {
   return options;
 };
 
-export const createOriginHeader = (
-  origin,
-  allowedOrigins = process.env.CORS_ALLOWED_ORIGINS || "*"
-) => {
-  if (!origin) {
-    return {};
-  }
+export const createOriginHeader = (origin, allowedOrigins) => {
   if (allowedOrigins === "*") {
     return { "Access-Control-Allow-Origin": allowedOrigins };
-  } else if (typeof allowedOrigins === "string") {
-    allowedOrigins = allowedOrigins.split(",");
   }
-  const allowedPatterns = allowedOrigins.map(wildcards);
-  const isAllowed = allowedPatterns.some(pattern => origin.match(pattern));
+  let allowedPatterns = allowedOrigins.map(wildcards);
+  let isAllowed = allowedPatterns.some(pattern => origin.match(pattern));
   if (isAllowed) {
     return { "Access-Control-Allow-Origin": origin };
   }
   return {};
 };
 
-export const createOptionsHeader = (origin, opts = {}) => {
-  let {
-    allowedMethods,
-    allowedHeaders,
-    allowedOrigins,
-    maxAge
-  } = Object.assign(
-    {
-      allowedMethods:
-        process.env.CORS_ALLOWED_METHODS || DEFAULT_ALLOWED_METHODS,
-      allowedHeaders:
-        process.env.CORS_ALLOWED_HEADERS || DEFAULT_ALLOWED_HEADERS,
-      maxAge: process.env.CORS_MAX_AGE || "600"
-    },
-    opts
-  );
-  if (typeof allowedMethods === "string") {
-    allowedMethods = allowedMethods.split(",");
-  }
-
-  if (typeof allowedHeaders === "string") {
-    allowedHeaders = allowedHeaders.split(",");
-  }
-  return Object.assign(createOriginHeader(origin, allowedOrigins), {
-    "Access-Control-Allow-Headers": allowedHeaders.join(","),
-    "Access-Control-Allow-Methods": allowedMethods.join(","),
-    "Access-Control-Max-Age": maxAge
-  });
-};
-
-export const createCORSHeader = (origin, opts = {}) => {
-  let { allowedMethods, allowedHeaders, allowedOrigins } = Object.assign(
-    {
-      allowedMethods:
-        process.env.CORS_ALLOWED_METHODS || DEFAULT_ALLOWED_METHODS,
-      allowedHeaders:
-        process.env.CORS_ALLOWED_HEADERS || DEFAULT_ALLOWED_HEADERS,
-      maxAge: process.env.CORS_MAX_AGE || "600"
-    },
-    opts
-  );
-  if (typeof allowedMethods === "string") {
-    allowedMethods = allowedMethods.split(",");
-  }
-
-  if (typeof allowedHeaders === "string") {
-    allowedHeaders = allowedHeaders.split(",");
-  }
-  return Object.assign(createOriginHeader(origin, allowedOrigins), {
-    "Access-Control-Allow-Headers": allowedHeaders.join(","),
+export const createOptionsHeader = (
+  allowedHeaders,
+  allowedMethods,
+  maxAge,
+  requestedHeaders
+) => {
+  let headers = {
     "Access-Control-Allow-Methods": allowedMethods.join(",")
-  });
+  };
+  if (requestedHeaders.length) {
+    let confirmedHeaders = allowedHeaders
+      .concat(CORS_SAFELISTED_HEADERS, FORBIDDEN_HEADERS)
+      .reduce((acc, header) => {
+        if (
+          requestedHeaders.includes(header) ||
+          requestedHeaders.includes(header.toLowerCase())
+        ) {
+          acc.push(header);
+        }
+        return acc;
+      }, []);
+    if (confirmedHeaders.length) {
+      headers["Access-Control-Allow-Headers"] = confirmedHeaders.join(", ");
+    }
+  }
+  headers["Access-Control-Max-Age"] = maxAge;
+  return headers;
 };
