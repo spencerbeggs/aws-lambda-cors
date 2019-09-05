@@ -6,9 +6,9 @@
   "license": "MIT",
   "author": "C. Spencer Beggs <spencer@beg.gs>",
   "scripts": {
-    "build": "pack build",
     "jest": "jest",
     "publish": "pack publish",
+    "package": "pack build",
     "push": "pack build && pack publish",
     "test": "jest",
     "upgrade-interactive": "npm-check --update"
