@@ -6,19 +6,13 @@ import {
   FORBIDDEN_WILDCARD_HEADERS
 } from "./constants";
 
-export function match(value, collection) {
-  return collection.some(target => {
-    value.toLowerCase() === target.toLowerCase() ||
-      value.toUpperCase() === target.toUpperCase();
-  });
-}
+export const match = (value, collection) =>
+  collection.some(target => value.toLowerCase() === target.toLowerCase());
 
-export function matchStart(value, collection) {
-  return collection.some(target => {
-    value.toLowerCase().startsWith(target.toLowerCase()) ||
-      value.toUpperCase().startsWith(target.toUpperCase());
-  });
-}
+export const matchStart = (value, collection) =>
+  collection.some(target =>
+    value.toLowerCase().startsWith(target.toLowerCase())
+  );
 
 export const wildcards = url => {
   const urlUnreservedPattern = "[A-Za-z0-9-._~]";

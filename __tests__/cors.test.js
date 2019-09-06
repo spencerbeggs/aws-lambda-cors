@@ -227,4 +227,22 @@ describe("Origin header handling", () => {
       })
     );
   });
+  it("sets allows a default Amplify request with default options ", () => {
+    Object.assign(event.headers, {
+      Accept: "application/json, text/plain, */*",
+      Authorization: "foobar",
+      DNT: "1",
+      Referer: "foobar",
+      "Sec-Fetch-Mode": "cors",
+      "User-Agent": "foobar",
+      "x-amz-date": "foobar",
+      "X-Amz-Security-Token": "foobar"
+    });
+    let { response } = cors(...args);
+    expect(response).toEqual(
+      expect.objectContaining({
+        statusCode: 200
+      })
+    );
+  });
 });

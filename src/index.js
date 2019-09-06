@@ -143,23 +143,24 @@ export const cors = (event, context, callback, opts = {}) => {
       callback = null;
     }
   }
-  let methodAllowed = allowedMethods.some(allowedMethod =>
-    match(allowedMethod, [method.httpMethod])
-  );
+  let methodAllowed = match(method.httpMethod, allowedMethods);
   if (callback && !methodAllowed) {
     response.statusCode = 405;
     callback(null, response);
     callback = null;
   }
-  let headersAllowed = allowedHeaders
-    .concat(CORS_SAFELISTED_HEADERS, FORBIDDEN_HEADERS)
+  allowedHeaders = allowedHeaders.concat(
+    CORS_SAFELISTED_HEADERS,
+    FORBIDDEN_HEADERS
+  );
+  let headersAllowed = Object.keys(lowerCaseHeaders)
+    .filter(
+      lowerCaseHeader =>
+        !matchStart(lowerCaseHeader, FORBIDDEN_WILDCARD_HEADERS)
+    )
     .reduce((acc, header) => {
       if (acc !== false) {
-        acc = Object.keys(lowerCaseHeaders)
-          .filter(lowerCaseHeader =>
-            matchStart(lowerCaseHeader, FORBIDDEN_WILDCARD_HEADERS)
-          )
-          .includes(header.toLowerCase());
+        acc = match(header, allowedHeaders);
       }
       return acc;
     }, true);
