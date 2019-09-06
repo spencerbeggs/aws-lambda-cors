@@ -51,6 +51,8 @@ export const FORBIDDEN_HEADERS = [
   "User-Agent"
 ];
 
+export const FORBIDDEN_WILDCARD_HEADERS = ["Proxy-", "Sec-"];
+
 export const CONTENT_TYPE_ALLOWED_VALUES = [
   "application/x-www-form-urlencoded",
   "multipart/form-data",

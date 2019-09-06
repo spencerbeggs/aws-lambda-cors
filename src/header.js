@@ -2,8 +2,23 @@ import {
   CORS_SAFELISTED_HEADERS,
   DEFAULT_ALLOWED_HEADERS,
   DEFAULT_ALLOWED_METHODS,
-  FORBIDDEN_HEADERS
+  FORBIDDEN_HEADERS,
+  FORBIDDEN_WILDCARD_HEADERS
 } from "./constants";
+
+export function match(value, collection) {
+  return collection.some(target => {
+    value.toLowerCase() === target.toLowerCase() ||
+      value.toUpperCase() === target.toUpperCase();
+  });
+}
+
+export function matchStart(value, collection) {
+  return collection.some(target => {
+    value.toLowerCase().startsWith(target.toLowerCase()) ||
+      value.toUpperCase().startsWith(target.toUpperCase());
+  });
+}
 
 export const wildcards = url => {
   const urlUnreservedPattern = "[A-Za-z0-9-._~]";
@@ -83,13 +98,13 @@ export const createOptionsHeader = (
     "Access-Control-Allow-Methods": allowedMethods.join(",")
   };
   if (requestedHeaders.length) {
+    requestedHeaders = requestedHeaders.filter(
+      header => !match(header, FORBIDDEN_WILDCARD_HEADERS)
+    );
     let confirmedHeaders = allowedHeaders
       .concat(CORS_SAFELISTED_HEADERS, FORBIDDEN_HEADERS)
       .reduce((acc, header) => {
-        if (
-          requestedHeaders.includes(header) ||
-          requestedHeaders.includes(header.toLowerCase())
-        ) {
+        if (match(header, requestedHeaders)) {
           acc.push(header);
         }
         return acc;

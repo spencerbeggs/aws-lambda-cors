@@ -1,7 +1,13 @@
-import { CORS_SAFELISTED_HEADERS, FORBIDDEN_HEADERS } from "./constants";
+import {
+  CORS_SAFELISTED_HEADERS,
+  FORBIDDEN_HEADERS,
+  FORBIDDEN_WILDCARD_HEADERS
+} from "./constants";
 import {
   createOptionsHeader,
   createOriginHeader,
+  match,
+  matchStart,
   parseOptions
 } from "./header";
 
@@ -134,17 +140,13 @@ export const cors = (event, context, callback, opts = {}) => {
     } catch (err) {
       response.statusCode = 400;
       callback(null, response);
+      callback = null;
     }
   }
-  let methodAllowed = allowedMethods.reduce((acc, allowedMethod) => {
-    if (acc !== true) {
-      acc =
-        allowedMethod.toUpperCase() == method.httpMethod ||
-        allowedMethod.toLowerCase() === method.httpMethod;
-    }
-    return acc;
-  }, false);
-  if (!methodAllowed) {
+  let methodAllowed = allowedMethods.some(allowedMethod =>
+    match(allowedMethod, [method.httpMethod])
+  );
+  if (callback && !methodAllowed) {
     response.statusCode = 405;
     callback(null, response);
     callback = null;
@@ -153,16 +155,20 @@ export const cors = (event, context, callback, opts = {}) => {
     .concat(CORS_SAFELISTED_HEADERS, FORBIDDEN_HEADERS)
     .reduce((acc, header) => {
       if (acc !== false) {
-        acc = Object.keys(lowerCaseHeaders).includes(header.toLowerCase());
+        acc = Object.keys(lowerCaseHeaders)
+          .filter(lowerCaseHeader =>
+            matchStart(lowerCaseHeader, FORBIDDEN_WILDCARD_HEADERS)
+          )
+          .includes(header.toLowerCase());
       }
       return acc;
     }, true);
-  if (!headersAllowed) {
+  if (callback && !headersAllowed) {
     response.statusCode = 412;
     callback(null, response);
     callback = null;
   }
-  if (!response.headers["Access-Control-Allow-Origin"] && strict) {
+  if (callback && !response.headers["Access-Control-Allow-Origin"] && strict) {
     response.statusCode = 412;
     callback(null, response);
     callback = null;
