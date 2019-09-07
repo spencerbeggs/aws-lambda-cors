@@ -10,7 +10,7 @@
     "publish": "pack publish",
     "package": "pack build",
     "push": "pack build && pack publish",
-    "test": "jest",
+    "test": "jest -coverage --coverageReporters=text-lcov | coveralls",
     "upgrade-interactive": "npm-check --update"
   },
   "keywords": [
@@ -53,6 +53,7 @@
     "@pika/plugin-standard-pkg": "^0.6.0",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.8.0",
+    "coveralls": "^3.0.6",
     "eslint": "^6.3.0",
     "eslint-config-prettier": "^6.2.0",
     "eslint-plugin-prettier": "^3.1.0",
