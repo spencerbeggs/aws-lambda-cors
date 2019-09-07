@@ -7,7 +7,7 @@ import { Method, parseOptions } from "./utilities";
 import { createOptionsHeader, createOriginHeader } from "./header";
 import { match, matchStart } from "./utilities";
 
-export const cors = (event, context, callback, opts = {}) => {
+export const cors = (event, context, cb, opts = {}) => {
   let {
     allowedOrigins,
     allowedMethods,
@@ -46,8 +46,8 @@ export const cors = (event, context, callback, opts = {}) => {
         requestedHeaders
       )
     );
-    callback(null, response);
-    callback = null;
+    cb(null, response);
+    cb = null;
   }
   if (
     lowerCaseHeaders["content-type"] &&
@@ -57,15 +57,15 @@ export const cors = (event, context, callback, opts = {}) => {
       data = JSON.parse(data);
     } catch (err) {
       response.statusCode = 400;
-      callback(null, response);
-      callback = null;
+      cb(null, response);
+      cb = null;
     }
   }
   let methodAllowed = match(method.verb, allowedMethods);
-  if (callback && !methodAllowed) {
+  if (cb && !methodAllowed) {
     response.statusCode = 405;
-    callback(null, response);
-    callback = null;
+    cb(null, response);
+    cb = null;
   }
   allowedHeaders = allowedHeaders.concat(
     CORS_SAFELISTED_HEADERS,
@@ -76,26 +76,21 @@ export const cors = (event, context, callback, opts = {}) => {
       lowerCaseHeader =>
         !matchStart(lowerCaseHeader, FORBIDDEN_WILDCARD_HEADERS)
     )
-    .reduce((acc, header) => {
-      if (acc !== false) {
-        acc = match(header, allowedHeaders);
-      }
-      return acc;
-    }, true);
-  if (callback && !headersAllowed) {
+    .every(header => match(header, allowedHeaders));
+  if (cb && !headersAllowed) {
     response.statusCode = 412;
-    callback(null, response);
-    callback = null;
+    cb(null, response);
+    cb = null;
   }
   if (
-    callback &&
+    cb &&
     !response.headers.hasOwnProperty("Access-Control-Allow-Origin") &&
     strict
   ) {
     response.statusCode = 412;
-    callback(null, response);
-    callback = null;
+    cb(null, response);
+    cb = null;
   }
 
-  return { event, context, callback, response, data, method, METHOD };
+  return { event, context, callback: cb, response, data, method, METHOD };
 };

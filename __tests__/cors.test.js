@@ -41,6 +41,36 @@ describe("Origin header handling", () => {
       })
     );
   });
+  it("response with a 204 for an OPTIONS request", () => {
+    event.httpMethod = "OPTIONS";
+    let { response } = cors(...args);
+    expect(response).toEqual(
+      expect.objectContaining({
+        statusCode: 204,
+        headers: expect.objectContaining({
+          "Access-Control-Allow-Origin": "*"
+        })
+      })
+    );
+  });
+  it("confirms Access-Control-Request-Headers on OPTIONS request", () => {
+    event.httpMethod = "OPTIONS";
+    Object.assign(event.headers, {
+      "Access-Control-Request-Headers": "X-Foo"
+    });
+    let { response } = cors(...args, {
+      allowedHeaders: "X-Foo"
+    });
+    expect(response).toEqual(
+      expect.objectContaining({
+        statusCode: 204,
+        headers: expect.objectContaining({
+          "Access-Control-Allow-Headers": "X-Foo",
+          "Access-Control-Allow-Origin": "*"
+        })
+      })
+    );
+  });
   it("sets allows a default Amplify request with default options ", () => {
     Object.assign(event.headers, {
       Accept: "application/json, text/plain, */*",
@@ -125,7 +155,12 @@ describe("Origin header handling", () => {
       foo: "bar"
     });
   });
-  it("returns calls back with 400 if if cannot parse the event body into JSON object when the request Content-Type starts with application/json", () => {
+  it("it doesn't  return an Access-Control-Allow-Origin header if there is no Origin in the request headers", () => {
+    delete event.headers["Origin"];
+    let { response } = cors(...args);
+    expect(response.headers["Access-Control-Allow-Origin"]).toBeUndefined();
+  });
+  it("it returns calls back with 400 if if cannot parse the event body into JSON object when the request Content-Type starts with application/json", () => {
     Object.assign(event.headers, {
       "Content-Type": "application/json; charset=utf-8"
     });
