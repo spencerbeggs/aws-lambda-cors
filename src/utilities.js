@@ -95,8 +95,7 @@ export const parseOptions = (opts = {}) => {
     "allowedOrigins",
     "allowedMethods",
     "allowedHeaders",
-    "maxAge",
-    "strict"
+    "maxAge"
   ];
   for (let key in opts) {
     if (!validKeys.includes(key)) {
@@ -110,9 +109,7 @@ export const parseOptions = (opts = {}) => {
         process.env.CORS_ALLOWED_METHODS || DEFAULT_ALLOWED_METHODS,
       allowedHeaders:
         process.env.CORS_ALLOWED_HEADERS || DEFAULT_ALLOWED_HEADERS,
-      maxAge: process.env.CORS_MAX_AGE || "600",
-      strict:
-        process.env.CORS_STRICT !== undefined ? process.env.CORS_STRICT : true
+      maxAge: process.env.CORS_MAX_AGE || "600"
     },
     opts
   );
@@ -127,12 +124,6 @@ export const parseOptions = (opts = {}) => {
   }
   if (typeof options.allowedHeaders === "string") {
     options.allowedHeaders = options.allowedHeaders.split(",");
-  }
-  if (typeof options.strict === "string" && options.strict === "true") {
-    options.strict = true;
-  }
-  if (typeof options.strict === "string" && options.strict === "false") {
-    options.strict = false;
   }
   return options;
 };

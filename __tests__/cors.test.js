@@ -128,17 +128,6 @@ describe("Origin header handling", () => {
       })
     );
   });
-  it("returns 412 for a non-CORS enabled request in strict mode", () => {
-    let { response } = cors(...args, {
-      allowedOrigins: "https://moobar.com"
-    });
-    expect(callback.mock.calls.length).toBe(1);
-    expect(response).toEqual(
-      expect.objectContaining({
-        statusCode: 412
-      })
-    );
-  });
   it("returns parses the event body into JSON if the request Content-Type starts with application/json", () => {
     Object.assign(event.headers, {
       "Content-Type": "application/json; charset=utf-8"

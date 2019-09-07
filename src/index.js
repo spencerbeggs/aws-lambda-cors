@@ -8,13 +8,9 @@ import { createOptionsHeader, createOriginHeader } from "./header";
 import { match, matchStart } from "./utilities";
 
 export const cors = (event, context, cb, opts = {}) => {
-  let {
-    allowedOrigins,
-    allowedMethods,
-    allowedHeaders,
-    maxAge,
-    strict
-  } = parseOptions(opts);
+  let { allowedOrigins, allowedMethods, allowedHeaders, maxAge } = parseOptions(
+    opts
+  );
   let response = {
     statusCode: 200,
     headers: {}
@@ -78,15 +74,6 @@ export const cors = (event, context, cb, opts = {}) => {
     )
     .every(header => match(header, allowedHeaders));
   if (cb && !headersAllowed) {
-    response.statusCode = 412;
-    cb(null, response);
-    cb = null;
-  }
-  if (
-    cb &&
-    !response.headers.hasOwnProperty("Access-Control-Allow-Origin") &&
-    strict
-  ) {
     response.statusCode = 412;
     cb(null, response);
     cb = null;

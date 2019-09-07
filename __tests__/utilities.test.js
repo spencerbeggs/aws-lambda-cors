@@ -98,8 +98,7 @@ describe("Options handling", () => {
         "X-Api-Key",
         "X-Amz-Security-Token"
       ],
-      maxAge: "600",
-      strict: true
+      maxAge: "600"
     });
   });
   it("returns overridden values when options are passed", () => {
@@ -114,8 +113,7 @@ describe("Options handling", () => {
       allowedOrigins: ["https://foobar.com"],
       allowedMethods: ["PATCH", "DELETE"],
       allowedHeaders: ["X-Foo", "X-Bar"],
-      maxAge: "200",
-      strict: false
+      maxAge: "200"
     });
   });
 
@@ -223,36 +221,6 @@ describe("Options handling", () => {
       })
     );
   });
-  it("accepts string true/false or boolean opts.strict from process.env.CORS_STRICT", () => {
-    process.env.CORS_STRICT = "true";
-    let options = parseOptions();
-    expect(options).toEqual(
-      expect.objectContaining({
-        strict: true
-      })
-    );
-    process.env.CORS_STRICT = "false";
-    options = parseOptions();
-    expect(options).toEqual(
-      expect.objectContaining({
-        strict: false
-      })
-    );
-    process.env.CORS_STRICT = true;
-    options = parseOptions();
-    expect(options).toEqual(
-      expect.objectContaining({
-        strict: true
-      })
-    );
-    process.env.CORS_STRICT = false;
-    options = parseOptions();
-    expect(options).toEqual(
-      expect.objectContaining({
-        strict: false
-      })
-    );
-  });
   it("omits invalid properties from parsed object", () => {
     const options = parseOptions({
       foo: "bar"
@@ -267,8 +235,7 @@ describe("Options handling", () => {
         "X-Api-Key",
         "X-Amz-Security-Token"
       ],
-      maxAge: "600",
-      strict: true
+      maxAge: "600"
     });
   });
 });
