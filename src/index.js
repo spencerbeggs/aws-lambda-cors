@@ -3,14 +3,9 @@ import {
   FORBIDDEN_HEADERS,
   FORBIDDEN_WILDCARD_HEADERS
 } from "./constants";
-import {
-  createOptionsHeader,
-  createOriginHeader,
-  parseOptions
-} from "./header";
+import { Method, parseOptions } from "./utilities";
+import { createOptionsHeader, createOriginHeader } from "./header";
 import { match, matchStart } from "./utilities";
-
-import { Method } from "./utilities";
 
 export const cors = (event, context, callback, opts = {}) => {
   let {

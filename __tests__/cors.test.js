@@ -28,6 +28,19 @@ describe("Origin header handling", () => {
       })
     );
   });
+  it("accepts wildcards in Origin URIs", () => {
+    event.headers.Origin = "https://foo.bar.com";
+    let { response } = cors(...args, {
+      allowedOrigins: "https://*.bar.com"
+    });
+    expect(response).toEqual(
+      expect.objectContaining({
+        headers: {
+          "Access-Control-Allow-Origin": "https://foo.bar.com"
+        }
+      })
+    );
+  });
   it("sets allows a default Amplify request with default options ", () => {
     Object.assign(event.headers, {
       Accept: "application/json, text/plain, */*",
@@ -95,5 +108,36 @@ describe("Origin header handling", () => {
         statusCode: 412
       })
     );
+  });
+  it("returns parses the event body into JSON if the request Content-Type starts with application/json", () => {
+    Object.assign(event.headers, {
+      "Content-Type": "application/json; charset=utf-8"
+    });
+    event.body = '{"foo":"bar"}';
+    let { response, data } = cors(...args);
+    expect(callback.mock.calls.length).toBe(0);
+    expect(response).toEqual(
+      expect.objectContaining({
+        statusCode: 200
+      })
+    );
+    expect(data).toMatchObject({
+      foo: "bar"
+    });
+  });
+  it("returns calls back with 400 if if cannot parse the event body into JSON object when the request Content-Type starts with application/json", () => {
+    Object.assign(event.headers, {
+      "Content-Type": "application/json; charset=utf-8"
+    });
+    let brokenJson = "{foo:bar}";
+    event.body = brokenJson;
+    let { response, data } = cors(...args);
+    expect(callback.mock.calls.length).toBe(1);
+    expect(response).toEqual(
+      expect.objectContaining({
+        statusCode: 400
+      })
+    );
+    expect(data).toEqual(brokenJson);
   });
 });
