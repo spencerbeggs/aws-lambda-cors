@@ -6,88 +6,11 @@ import {
 import {
   createOptionsHeader,
   createOriginHeader,
-  match,
-  matchStart,
   parseOptions
 } from "./header";
+import { match, matchStart } from "./utilities";
 
-class Method {
-  constructor(httpMethod) {
-    this.httpMethod = httpMethod;
-  }
-  get get() {
-    return this.httpMethod === "GET" || this.httpMethod === "GET";
-  }
-  get head() {
-    return this.httpMethod === "HEAD" || this.httpMethod === "head";
-  }
-  get post() {
-    return this.httpMethod === "POST" || this.httpMethod === "post";
-  }
-  get put() {
-    return this.httpMethod === "PUT" || this.httpMethod === "put";
-  }
-  get delete() {
-    return this.httpMethod === "DELETE" || this.httpMethod === "delete";
-  }
-  get connect() {
-    return this.httpMethod === "CONNECT" || this.httpMethod === "connect";
-  }
-  get options() {
-    return this.httpMethod === "OPTIONS" || this.httpMethod === "options";
-  }
-  get trace() {
-    return this.httpMethod === "TRACE" || this.httpMethod === "trace";
-  }
-  get patch() {
-    return this.httpMethod === "PATCH" || this.httpMethod === "patch";
-  }
-  is(val) {
-    return this.httpMethod.toLowerCase() === val.toLowerCase();
-  }
-  not(val) {
-    return this.httpMethod.toLowerCase() !== val.toLowerCase();
-  }
-}
-
-class MethodENUM {
-  constructor(httpMethod) {
-    this.httpMethod = httpMethod;
-  }
-  get GET() {
-    return this.httpMethod === "GET" || this.httpMethod === "GET";
-  }
-  get HEAD() {
-    return this.httpMethod === "HEAD" || this.httpMethod === "head";
-  }
-  get POST() {
-    return this.httpMethod === "POST" || this.httpMethod === "post";
-  }
-  get PUT() {
-    return this.httpMethod === "PUT" || this.httpMethod === "put";
-  }
-  get DELETE() {
-    return this.httpMethod === "DELETE" || this.httpMethod === "delete";
-  }
-  get CONNECT() {
-    return this.httpMethod === "CONNECT" || this.httpMethod === "connect";
-  }
-  get OPTIONS() {
-    return this.httpMethod === "OPTIONS" || this.httpMethod === "options";
-  }
-  get TRACE() {
-    return this.httpMethod === "TRACE" || this.httpMethod === "trace";
-  }
-  get PATCH() {
-    return this.httpMethod === "PATCH" || this.httpMethod === "patch";
-  }
-  IS(val) {
-    return this.httpMethod.toUpperCase() === val.toUpperCase();
-  }
-  NOT(val) {
-    return this.httpMethod.toUpperCase() !== val.toUpperCase();
-  }
-}
+import { Method } from "./utilities";
 
 export const cors = (event, context, callback, opts = {}) => {
   let {
@@ -102,7 +25,7 @@ export const cors = (event, context, callback, opts = {}) => {
     headers: {}
   };
   let method = new Method(event.httpMethod);
-  let METHOD = new MethodENUM(event.httpMethod);
+  let METHOD = method;
   let lowerCaseHeaders = Object.keys(event.headers).reduce((acc, header) => {
     acc[header.toLowerCase()] = event.headers[header];
     return acc;
@@ -143,7 +66,7 @@ export const cors = (event, context, callback, opts = {}) => {
       callback = null;
     }
   }
-  let methodAllowed = match(method.httpMethod, allowedMethods);
+  let methodAllowed = match(method.verb, allowedMethods);
   if (callback && !methodAllowed) {
     response.statusCode = 405;
     callback(null, response);
@@ -169,7 +92,11 @@ export const cors = (event, context, callback, opts = {}) => {
     callback(null, response);
     callback = null;
   }
-  if (callback && !response.headers["Access-Control-Allow-Origin"] && strict) {
+  if (
+    callback &&
+    !response.headers.hasOwnProperty("Access-Control-Allow-Origin") &&
+    strict
+  ) {
     response.statusCode = 412;
     callback(null, response);
     callback = null;

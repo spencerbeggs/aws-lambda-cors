@@ -6,13 +6,7 @@ import {
   FORBIDDEN_WILDCARD_HEADERS
 } from "./constants";
 
-export const match = (value, collection) =>
-  collection.some(target => value.toLowerCase() === target.toLowerCase());
-
-export const matchStart = (value, collection) =>
-  collection.some(target =>
-    value.toLowerCase().startsWith(target.toLowerCase())
-  );
+import { match } from "./utilities";
 
 export const wildcards = url => {
   const urlUnreservedPattern = "[A-Za-z0-9-._~]";
