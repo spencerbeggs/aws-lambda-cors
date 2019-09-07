@@ -13,6 +13,10 @@
     "test": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "upgrade-interactive": "npm-check --update"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spencerbeggs/aws-lambda-cors.git"
+  },
   "keywords": [
     "AWS",
     "Lambda",
