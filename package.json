@@ -1,12 +1,12 @@
 {
   "name": "@spencerbeggs/aws-lambda-cors",
   "description": "Utility module for basic handling cross-origin resource responses in serverless AWS Lambda functions attaches to API Gateway.",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "main": "src/index.js",
   "license": "MIT",
   "author": "C. Spencer Beggs <spencer@beg.gs>",
   "scripts": {
-    "build": "npx pack build",
+    "build": "pack build",
     "jest": "jest",
     "publish": "pack publish",
     "package": "pack build",
@@ -50,8 +50,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.5.4",
-    "@babel/preset-env": "^7.5.4",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
     "@pika/pack": "^0.5.0",
     "@pika/plugin-build-node": "^0.6.0",
     "@pika/plugin-bundle-node": "^0.6.0",
