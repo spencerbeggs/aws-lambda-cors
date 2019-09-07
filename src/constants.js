@@ -47,5 +47,14 @@ export const FORBIDDEN_HEADERS = [
   "Trailer",
   "Transfer-Encoding",
   "Upgrade",
-  "Via"
+  "Via",
+  "User-Agent"
+];
+
+export const FORBIDDEN_WILDCARD_HEADERS = ["Proxy-", "Sec-"];
+
+export const CONTENT_TYPE_ALLOWED_VALUES = [
+  "application/x-www-form-urlencoded",
+  "multipart/form-data",
+  "text/plain"
 ];
