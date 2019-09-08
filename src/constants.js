@@ -51,6 +51,7 @@ export const FORBIDDEN_HEADERS = [
 ];
 
 export const AWS_HEADERS = [
+  "Pragma",
   "Cache-Control",
   "CloudFront-Forwarded-Proto",
   "CloudFront-Is-Desktop-Viewer",

@@ -70,33 +70,12 @@ export const cors = (event, context, cb, opts = {}) => {
     FORBIDDEN_HEADERS,
     AWS_HEADERS
   );
-  let headersAllowed = Object.keys(headers).every(
+  let disallowedHeaders = Object.keys(headers).every(
     header =>
       match(header, allowedHeaders) ||
       matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
   );
-  console.log(JSON.stringify(headers));
-  console.log(JSON.stringify(allowedHeaders));
-  console.log(JSON.stringify(headersAllowed));
-  console.log(
-    JSON.stringify(
-      Object.keys(headers).filter(
-        header =>
-          !match(header, allowedHeaders) ||
-          !matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
-      )
-    )
-  );
-  console.log(
-    JSON.stringify(
-      Object.keys(headers).filter(
-        header =>
-          !match(header, allowedHeaders) ||
-          !matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
-      )
-    )
-  );
-  if (cb && !headersAllowed) {
+  if (cb && !disallowedHeaders) {
     response.statusCode = 412;
     cb(null, response);
     cb = null;

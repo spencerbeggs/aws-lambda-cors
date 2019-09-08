@@ -83,16 +83,18 @@ describe("Origin header handling", () => {
       "x-amz-date": "foobar",
       "X-Amz-Security-Token": "foobar"
     });
-    let { response } = cors(...args);
-    expect(callback.mock.calls.length).toBe(0);
+    let { response } = cors(...args, {
+      allowedOrigins: "https://foobar.com"
+    });
     expect(response).toEqual(
       expect.objectContaining({
         statusCode: 200,
         headers: expect.objectContaining({
-          "Access-Control-Allow-Origin": "*"
+          "Access-Control-Allow-Origin": "https://foobar.com"
         })
       })
     );
+    expect(callback.mock.calls.length).toBe(0);
   });
   it("sets allows a default Amplify request with default options ", () => {
     Object.assign(event.headers, {
@@ -126,12 +128,12 @@ describe("Origin header handling", () => {
   it("returns 412 for a request with a not allowed header", () => {
     event.headers["X-Missing"] = "Error";
     let { response } = cors(...args);
-    expect(callback.mock.calls.length).toBe(1);
     expect(response).toEqual(
       expect.objectContaining({
         statusCode: 412
       })
     );
+    expect(callback.mock.calls.length).toBe(1);
   });
   it("returns parses the event body into JSON if the request Content-Type starts with application/json", () => {
     Object.assign(event.headers, {

@@ -2,47 +2,33 @@ import { createOptionsHeader, createOriginHeader } from "../src/header";
 
 describe("Origin header processing", () => {
   it("it sets Access-Control-Allow-Origin to * if allowedOrigins is *", () => {
-    let header = createOriginHeader("https://foobar.com", "*", "PATCH", []);
+    let header = createOriginHeader("https://foobar.com", "*");
     expect(header).toMatchObject({
       "Access-Control-Allow-Origin": "*"
     });
   });
   it("it sets sets Access-Control-Allow-Origin if the origin is allowed", () => {
-    let header = createOriginHeader(
-      "https://foo.bar.com",
-      ["https://foo.bar.com"],
-      "PATCH",
-      []
-    );
+    let header = createOriginHeader("https://foo.bar.com", [
+      "https://foo.bar.com"
+    ]);
     expect(header).toMatchObject({
       "Access-Control-Allow-Origin": "https://foo.bar.com"
     });
   });
   it("it doesn't set Access-Control-Allow-Origin origin is not allowd", () => {
-    let header = createOriginHeader(
-      "https://foobar.com",
-      ["https://moobar.com"],
-      "PATCH",
-      []
-    );
+    let header = createOriginHeader("https://foobar.com", [
+      "https://moobar.com"
+    ]);
     expect(header["Access-Control-Allow-Origin"]).toBeUndefined();
   });
   it("it doesn't set Access-Control-Allow-Origin if origin is not provided", () => {
-    let header = createOriginHeader(
-      undefined,
-      ["https://foobar.com"],
-      "PATCH",
-      []
-    );
+    let header = createOriginHeader(undefined, ["https://foobar.com"]);
     expect(header["Access-Control-Allow-Origin"]).toBeUndefined();
   });
   it("it sets Access-Control-Allow-Origin with wildcards in the Origin URI", () => {
-    let header = createOriginHeader(
-      "https://foo.bar.com",
-      ["https://*.bar.com"],
-      "PATCH",
-      []
-    );
+    let header = createOriginHeader("https://foo.bar.com", [
+      "https://*.bar.com"
+    ]);
     expect(header).toMatchObject({
       "Access-Control-Allow-Origin": "https://foo.bar.com"
     });

@@ -1,46 +1,14 @@
 import {
   AWS_HEADERS,
-  CONTENT_TYPE_ALLOWED_VALUES,
   CORS_SAFELISTED_HEADERS,
   FORBIDDEN_HEADERS,
   FORBIDDEN_WILDCARD_HEADERS
 } from "./constants";
-import { match, matchStart, wildcards } from "./utilities";
+import { match, wildcards } from "./utilities";
 
-export const isSimpleRequest = (method, requestedHeaders) => {
-  let allowedMethods = ["GET", "HEAD", "POST"];
-  let headerNames = Object.keys(requestedHeaders);
-  if (!match(method, allowedMethods)) {
-    return false;
-  }
-  headerNames = headerNames.filter(header =>
-    matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
-  );
-  let allowedHeaders = headerNames.concat(
-    CORS_SAFELISTED_HEADERS,
-    FORBIDDEN_HEADERS,
-    AWS_HEADERS
-  );
-  let isAllowed =
-    headerNames.map(header => !match(header, allowedHeaders)).length === 0;
-  let contentType = requestedHeaders["content-type"];
-  if (contentType) {
-    isAllowed = match(contentType, CONTENT_TYPE_ALLOWED_VALUES);
-  }
-  return isAllowed;
-};
-
-export const createOriginHeader = (
-  origin,
-  allowedOrigins,
-  method,
-  requestedHeaders
-) => {
+export const createOriginHeader = (origin, allowedOrigins) => {
   if (allowedOrigins === "*") {
     return { "Access-Control-Allow-Origin": allowedOrigins };
-  }
-  if (isSimpleRequest(method, requestedHeaders) && !origin) {
-    return { "Access-Control-Allow-Origin": "*" };
   }
   if (!origin) {
     return {};
@@ -64,16 +32,14 @@ export const createOptionsHeader = (
     "Access-Control-Allow-Methods": allowedMethods.join(",")
   };
   if (requestedHeaders.length) {
-    requestedHeaders = requestedHeaders.filter(
-      header => !match(header, FORBIDDEN_WILDCARD_HEADERS)
-    );
     let safeHeaders = allowedHeaders.concat(
       CORS_SAFELISTED_HEADERS,
       FORBIDDEN_HEADERS,
       AWS_HEADERS
     );
-    let confirmedHeaders = requestedHeaders.filter(header =>
-      match(header, safeHeaders)
+    let confirmedHeaders = requestedHeaders.filter(
+      header =>
+        match(header, safeHeaders) || match(header, FORBIDDEN_WILDCARD_HEADERS)
     );
     if (confirmedHeaders.length) {
       headers["Access-Control-Allow-Headers"] = confirmedHeaders.join(", ");
