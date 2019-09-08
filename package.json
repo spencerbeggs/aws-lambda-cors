@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "C. Spencer Beggs <spencer@beg.gs>",
   "scripts": {
-    "build": "./node_modules/.bin/pika-pack",
+    "build": "pack build",
     "jest": "jest",
     "publish": "pack publish",
     "package": "pack build",
