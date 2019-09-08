@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "C. Spencer Beggs <spencer@beg.gs>",
   "scripts": {
-    "build": "npx pack build",
+    "build": "./node_modules/.bin/pika-pack",
     "jest": "jest",
     "publish": "pack publish",
     "package": "pack build",
@@ -65,5 +65,6 @@
     "jest": "^24.8.0",
     "npm-check": "^5.9.0",
     "prettier": "^1.18.2"
-  }
+  },
+  "dependencies": {}
 }
