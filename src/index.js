@@ -76,13 +76,14 @@ export const cors = (event, context, cb, opts = {}) => {
       matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
   );
   console.log(JSON.stringify(headers));
+  console.log(JSON.stringify(allowedHeaders));
   console.log(JSON.stringify(headersAllowed));
   console.log(
     JSON.stringify(
-      Object.keys(headers).every(
+      Object.keys(headers).filter(
         header =>
-          match(header, allowedHeaders) ||
-          matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
+          !match(header, allowedHeaders) ||
+          !matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
       )
     )
   );

@@ -19,7 +19,6 @@ export const CORS_SAFELISTED_HEADERS = [
   "Authorization",
   "Content-Type",
   "Content-Language",
-  "Content-Type",
   "DPR",
   "Downlink",
   "Save-Data",
