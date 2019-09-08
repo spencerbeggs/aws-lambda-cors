@@ -2,33 +2,47 @@ import { createOptionsHeader, createOriginHeader } from "../src/header";
 
 describe("Origin header processing", () => {
   it("it sets Access-Control-Allow-Origin to * if allowedOrigins is *", () => {
-    let header = createOriginHeader("https://foobar.com", "*");
+    let header = createOriginHeader("https://foobar.com", "*", "PATCH", []);
     expect(header).toMatchObject({
       "Access-Control-Allow-Origin": "*"
     });
   });
-  it("it sets sets Access-Control-Allow-Origin if the origin is allowedr", () => {
-    let header = createOriginHeader("https://foo.bar.com", [
-      "https://foo.bar.com"
-    ]);
+  it("it sets sets Access-Control-Allow-Origin if the origin is allowed", () => {
+    let header = createOriginHeader(
+      "https://foo.bar.com",
+      ["https://foo.bar.com"],
+      "PATCH",
+      []
+    );
     expect(header).toMatchObject({
       "Access-Control-Allow-Origin": "https://foo.bar.com"
     });
   });
   it("it doesn't set Access-Control-Allow-Origin origin is not allowd", () => {
-    let header = createOriginHeader("https://foobar.com", [
-      "https://moobar.com"
-    ]);
+    let header = createOriginHeader(
+      "https://foobar.com",
+      ["https://moobar.com"],
+      "PATCH",
+      []
+    );
     expect(header["Access-Control-Allow-Origin"]).toBeUndefined();
   });
   it("it doesn't set Access-Control-Allow-Origin if not origin is provided", () => {
-    let header = createOriginHeader(undefined, ["https://foobar.com"]);
+    let header = createOriginHeader(
+      undefined,
+      ["https://foobar.com"],
+      "PATCH",
+      []
+    );
     expect(header["Access-Control-Allow-Origin"]).toBeUndefined();
   });
   it("it sets Access-Control-Allow-Origin with wildcards in the Origin URI", () => {
-    let header = createOriginHeader("https://foo.bar.com", [
-      "https://*.bar.com"
-    ]);
+    let header = createOriginHeader(
+      "https://foo.bar.com",
+      ["https://*.bar.com"],
+      "PATCH",
+      []
+    );
     expect(header).toMatchObject({
       "Access-Control-Allow-Origin": "https://foo.bar.com"
     });

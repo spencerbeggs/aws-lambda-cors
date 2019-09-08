@@ -17,19 +17,20 @@ export const cors = (event, context, cb, opts = {}) => {
   };
   let method = new Method(event.httpMethod);
   let METHOD = method;
-  let lowerCaseHeaders = Object.keys(event.headers).reduce((acc, header) => {
+  let headers = Object.keys(event.headers).reduce((acc, header) => {
     acc[header.toLowerCase()] = event.headers[header];
     return acc;
   }, {});
   let data = event.body || null;
-  let origin = lowerCaseHeaders.origin;
-  if (origin) {
-    Object.assign(response.headers, createOriginHeader(origin, allowedOrigins));
-  }
+  let origin = headers.origin;
+  Object.assign(
+    response.headers,
+    createOriginHeader(origin, allowedOrigins, method.VERB, headers)
+  );
   if (method.options) {
     response.statusCode = 204;
-    let requestedHeaders = lowerCaseHeaders["access-control-request-headers"]
-      ? lowerCaseHeaders["access-control-request-headers"]
+    let requestedHeaders = headers["access-control-request-headers"]
+      ? headers["access-control-request-headers"]
           .split(",")
           .map(value => value.trim())
       : [];
@@ -46,8 +47,8 @@ export const cors = (event, context, cb, opts = {}) => {
     cb = null;
   }
   if (
-    lowerCaseHeaders["content-type"] &&
-    lowerCaseHeaders["content-type"].startsWith("application/json")
+    headers["content-type"] &&
+    headers["content-type"].startsWith("application/json")
   ) {
     try {
       data = JSON.parse(data);
@@ -67,7 +68,7 @@ export const cors = (event, context, cb, opts = {}) => {
     CORS_SAFELISTED_HEADERS,
     FORBIDDEN_HEADERS
   );
-  let headersAllowed = Object.keys(lowerCaseHeaders)
+  let headersAllowed = Object.keys(headers)
     .filter(
       lowerCaseHeader =>
         !matchStart(lowerCaseHeader, FORBIDDEN_WILDCARD_HEADERS)

@@ -1,13 +1,44 @@
 import {
+  CONTENT_TYPE_ALLOWED_VALUES,
   CORS_SAFELISTED_HEADERS,
   FORBIDDEN_HEADERS,
   FORBIDDEN_WILDCARD_HEADERS
 } from "./constants";
-import { match, wildcards } from "./utilities";
+import { match, matchStart, wildcards } from "./utilities";
 
-export const createOriginHeader = (origin, allowedOrigins) => {
+export const isSimpleRequest = (method, requestedHeaders) => {
+  let allowedMethods = ["GET", "HEAD", "POST"];
+  let headerNames = Object.keys(requestedHeaders);
+  if (!match(method, allowedMethods)) {
+    return false;
+  }
+  let allowedHeaders = headerNames.concat(
+    CORS_SAFELISTED_HEADERS,
+    FORBIDDEN_HEADERS
+  );
+  let isAllowed = Object.keys(allowedHeaders)
+    .filter(header => !matchStart(header, FORBIDDEN_WILDCARD_HEADERS))
+    .every(header => match(header, allowedHeaders));
+  if (requestedHeaders["content-type"]) {
+    isAllowed = !match(
+      requestedHeaders["content-type"],
+      CONTENT_TYPE_ALLOWED_VALUES
+    );
+  }
+  return isAllowed;
+};
+
+export const createOriginHeader = (
+  origin,
+  allowedOrigins,
+  method,
+  requestedHeaders
+) => {
   if (!origin) {
     return {};
+  }
+  if (isSimpleRequest(method, requestedHeaders)) {
+    return { "Access-Control-Allow-Origin": "*" };
   }
   if (allowedOrigins === "*") {
     return { "Access-Control-Allow-Origin": allowedOrigins };
