@@ -48,8 +48,7 @@ export const FORBIDDEN_HEADERS = [
   "Transfer-Encoding",
   "Upgrade",
   "Via",
-  "User-Agent",
-  "X-Forwarded-Port"
+  "User-Agent"
 ];
 
 export const AWS_HEADERS = [
@@ -61,7 +60,6 @@ export const AWS_HEADERS = [
   "CloudFront-Is-Tablet-Viewer",
   "CloudFront-Viewer-Country",
   "Upgrade-Insecure-Requests",
-  "Via",
   "X-Amz-Cf-Id",
   "X-Forwarded-For",
   "X-Forwarded-Port",

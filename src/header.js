@@ -67,14 +67,15 @@ export const createOptionsHeader = (
     requestedHeaders = requestedHeaders.filter(
       header => !match(header, FORBIDDEN_WILDCARD_HEADERS)
     );
-    let confirmedHeaders = allowedHeaders
-      .concat(CORS_SAFELISTED_HEADERS, FORBIDDEN_HEADERS)
-      .reduce((acc, header) => {
-        if (match(header, requestedHeaders)) {
-          acc.push(header);
-        }
-        return acc;
-      }, []);
+    let safeHeaders = allowedHeaders.concat(
+      CORS_SAFELISTED_HEADERS,
+      FORBIDDEN_HEADERS,
+      AWS_HEADERS
+    );
+
+    let confirmedHeaders = requestedHeaders.filter(header =>
+      match(header, safeHeaders)
+    );
     if (confirmedHeaders.length) {
       headers["Access-Control-Allow-Headers"] = confirmedHeaders.join(", ");
     }

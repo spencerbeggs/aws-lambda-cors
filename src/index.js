@@ -70,6 +70,9 @@ export const cors = (event, context, cb, opts = {}) => {
     FORBIDDEN_HEADERS,
     AWS_HEADERS
   );
+  console.log(headers);
+  console.log(allowedHeaders);
+  console.log(allowedHeaders);
   let headersAllowed = Object.keys(headers).every(
     header =>
       match(header, allowedHeaders) ||
