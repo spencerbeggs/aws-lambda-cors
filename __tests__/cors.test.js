@@ -7,7 +7,7 @@ describe("Origin header handling", () => {
   let args;
   beforeEach(() => {
     event = {
-      httpMethod: "POST",
+      httpMethod: "PATCH",
       headers: {
         Origin: "https://foobar.com"
       }
@@ -109,7 +109,7 @@ describe("Origin header handling", () => {
   });
   it("returns 405 for a unallowed method", () => {
     let { response } = cors(...args, {
-      allowedMethods: "PATCH"
+      allowedMethods: "DELETE"
     });
     expect(callback.mock.calls.length).toBe(1);
     expect(response).toEqual(

@@ -16,7 +16,7 @@ export const isSimpleRequest = (method, requestedHeaders) => {
     CORS_SAFELISTED_HEADERS,
     FORBIDDEN_HEADERS
   );
-  let isAllowed = Object.keys(allowedHeaders)
+  let isAllowed = headerNames
     .filter(header => !matchStart(header, FORBIDDEN_WILDCARD_HEADERS))
     .every(header => match(header, allowedHeaders));
   if (requestedHeaders["content-type"]) {
