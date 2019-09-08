@@ -12,18 +12,17 @@ export const isSimpleRequest = (method, requestedHeaders) => {
   if (!match(method, allowedMethods)) {
     return false;
   }
+  headerNames = headerNames.filter(header =>
+    matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
+  );
   let allowedHeaders = headerNames.concat(
     CORS_SAFELISTED_HEADERS,
     FORBIDDEN_HEADERS
   );
-  let isAllowed = headerNames
-    .filter(header => !matchStart(header, FORBIDDEN_WILDCARD_HEADERS))
-    .every(header => match(header, allowedHeaders));
-  if (requestedHeaders["content-type"]) {
-    isAllowed = !match(
-      requestedHeaders["content-type"],
-      CONTENT_TYPE_ALLOWED_VALUES
-    );
+  let isAllowed = headerNames.every(header => match(header, allowedHeaders));
+  let contentType = requestedHeaders["content-type"];
+  if (contentType) {
+    isAllowed = match(contentType, CONTENT_TYPE_ALLOWED_VALUES);
   }
   return isAllowed;
 };
