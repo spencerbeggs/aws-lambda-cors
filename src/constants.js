@@ -1,7 +1,5 @@
 export const DEFAULT_ALLOWED_HEADERS = [
-  "Content-Type",
   "X-Amz-Date",
-  "Authorization",
   "X-Api-Key",
   "X-Amz-Security-Token"
 ];
@@ -18,6 +16,8 @@ export const DEFAULT_ALLOWED_METHODS = [
 export const CORS_SAFELISTED_HEADERS = [
   "Accept",
   "Accept-Language",
+  "Content-Type",
+  "Authorization",
   "Content-Language",
   "Content-Type",
   "DPR",

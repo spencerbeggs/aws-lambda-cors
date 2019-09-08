@@ -91,13 +91,7 @@ describe("Options handling", () => {
     expect(options).toMatchObject({
       allowedOrigins: "*",
       allowedMethods: ["GET", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"],
-      allowedHeaders: [
-        "Content-Type",
-        "X-Amz-Date",
-        "Authorization",
-        "X-Api-Key",
-        "X-Amz-Security-Token"
-      ],
+      allowedHeaders: ["X-Amz-Date", "X-Api-Key", "X-Amz-Security-Token"],
       maxAge: "600"
     });
   });
@@ -228,13 +222,7 @@ describe("Options handling", () => {
     expect(options).toMatchObject({
       allowedOrigins: "*",
       allowedMethods: ["GET", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"],
-      allowedHeaders: [
-        "Content-Type",
-        "X-Amz-Date",
-        "Authorization",
-        "X-Api-Key",
-        "X-Amz-Security-Token"
-      ],
+      allowedHeaders: ["X-Amz-Date", "X-Api-Key", "X-Amz-Security-Token"],
       maxAge: "600"
     });
   });
