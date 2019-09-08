@@ -16,8 +16,8 @@ export const DEFAULT_ALLOWED_METHODS = [
 export const CORS_SAFELISTED_HEADERS = [
   "Accept",
   "Accept-Language",
-  "Content-Type",
   "Authorization",
+  "Content-Type",
   "Content-Language",
   "Content-Type",
   "DPR",
@@ -48,7 +48,24 @@ export const FORBIDDEN_HEADERS = [
   "Transfer-Encoding",
   "Upgrade",
   "Via",
-  "User-Agent"
+  "User-Agent",
+  "X-Forwarded-Port"
+];
+
+export const AWS_HEADERS = [
+  "Cache-Control",
+  "CloudFront-Forwarded-Proto",
+  "CloudFront-Is-Desktop-Viewer",
+  "CloudFront-Is-Mobile-Viewer",
+  "CloudFront-Is-SmartTV-Viewer",
+  "CloudFront-Is-Tablet-Viewer",
+  "CloudFront-Viewer-Country",
+  "Upgrade-Insecure-Requests",
+  "Via",
+  "X-Amz-Cf-Id",
+  "X-Forwarded-For",
+  "X-Forwarded-Port",
+  "X-Forwarded-Proto"
 ];
 
 export const FORBIDDEN_WILDCARD_HEADERS = ["Proxy-", "Sec-"];

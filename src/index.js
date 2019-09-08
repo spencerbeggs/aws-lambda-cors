@@ -1,4 +1,5 @@
 import {
+  AWS_HEADERS,
   CORS_SAFELISTED_HEADERS,
   FORBIDDEN_HEADERS,
   FORBIDDEN_WILDCARD_HEADERS
@@ -66,7 +67,8 @@ export const cors = (event, context, cb, opts = {}) => {
   }
   allowedHeaders = allowedHeaders.concat(
     CORS_SAFELISTED_HEADERS,
-    FORBIDDEN_HEADERS
+    FORBIDDEN_HEADERS,
+    AWS_HEADERS
   );
   let headersAllowed = Object.keys(headers).every(
     header =>

@@ -1,4 +1,5 @@
 import {
+  AWS_HEADERS,
   CONTENT_TYPE_ALLOWED_VALUES,
   CORS_SAFELISTED_HEADERS,
   FORBIDDEN_HEADERS,
@@ -17,7 +18,8 @@ export const isSimpleRequest = (method, requestedHeaders) => {
   );
   let allowedHeaders = headerNames.concat(
     CORS_SAFELISTED_HEADERS,
-    FORBIDDEN_HEADERS
+    FORBIDDEN_HEADERS,
+    AWS_HEADERS
   );
   let isAllowed =
     headerNames.map(header => !match(header, allowedHeaders)).length === 0;
