@@ -1,9 +1,9 @@
 export const match = (value, collection) =>
-  collection.some(target => value.toLowerCase() === target.toLowerCase());
+  collection.some(target => value.toUpperCase() === target.toUpperCase());
 
 export const matchStart = (value, collection) =>
   collection.some(target =>
-    value.toLowerCase().startsWith(target.toLowerCase())
+    value.toUpperCase().startsWith(target.toUpperCase())
   );
 
 export const wildcards = url => {

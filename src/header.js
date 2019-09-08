@@ -72,7 +72,6 @@ export const createOptionsHeader = (
       FORBIDDEN_HEADERS,
       AWS_HEADERS
     );
-
     let confirmedHeaders = requestedHeaders.filter(header =>
       match(header, safeHeaders)
     );

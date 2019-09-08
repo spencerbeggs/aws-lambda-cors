@@ -70,15 +70,13 @@ export const cors = (event, context, cb, opts = {}) => {
     FORBIDDEN_HEADERS,
     AWS_HEADERS
   );
-  console.log(headers);
-  console.log(allowedHeaders);
-  console.log(allowedHeaders);
   let headersAllowed = Object.keys(headers).every(
     header =>
       match(header, allowedHeaders) ||
       matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
   );
-  console.log(headersAllowed);
+  console.log(JSON.stringify(headers));
+  console.log(JSON.stringify(headersAllowed));
   console.log(
     JSON.stringify(
       Object.keys(headers).every(
