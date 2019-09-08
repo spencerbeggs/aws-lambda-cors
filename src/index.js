@@ -68,12 +68,19 @@ export const cors = (event, context, cb, opts = {}) => {
     CORS_SAFELISTED_HEADERS,
     FORBIDDEN_HEADERS
   );
-  let headersAllowed = Object.keys(headers)
-    .filter(
-      lowerCaseHeader =>
-        !matchStart(lowerCaseHeader, FORBIDDEN_WILDCARD_HEADERS)
+  let headersAllowed = Object.keys(headers).every(
+    header =>
+      match(header, allowedHeaders) ||
+      matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
+  );
+  console.log(headersAllowed);
+  console.log(
+    Object.keys(headers).every(
+      header =>
+        match(header, allowedHeaders) ||
+        matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
     )
-    .every(header => match(header, allowedHeaders));
+  );
   if (cb && !headersAllowed) {
     response.statusCode = 412;
     cb(null, response);
