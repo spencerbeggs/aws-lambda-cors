@@ -71,7 +71,8 @@ describe("Origin header handling", () => {
       })
     );
   });
-  it("sets allows a default Amplify request with default options ", () => {
+  it("sets allows an Simple request with default options ", () => {
+    event.httpMethod = "GET";
     Object.assign(event.headers, {
       Accept: "application/json, text/plain, */*",
       Authorization: "foobar",
@@ -83,9 +84,13 @@ describe("Origin header handling", () => {
       "X-Amz-Security-Token": "foobar"
     });
     let { response } = cors(...args);
+    expect(callback.mock.calls.length).toBe(0);
     expect(response).toEqual(
       expect.objectContaining({
-        statusCode: 200
+        statusCode: 200,
+        headers: expect.objectContaining({
+          "Access-Control-Allow-Origin": "*"
+        })
       })
     );
   });
