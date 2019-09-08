@@ -81,6 +81,13 @@ export const cors = (event, context, cb, opts = {}) => {
         matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
     )
   );
+  console.log(
+    Object.keys(headers).filter(
+      header =>
+        !match(header, allowedHeaders) ||
+        !matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
+    )
+  );
   if (cb && !headersAllowed) {
     response.statusCode = 412;
     cb(null, response);
