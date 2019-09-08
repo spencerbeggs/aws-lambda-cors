@@ -84,6 +84,7 @@ describe("Origin header handling", () => {
       "X-Amz-Security-Token": "foobar"
     });
     let { response } = cors(...args);
+    console.log(response);
     expect(callback.mock.calls.length).toBe(0);
     expect(response).toEqual(
       expect.objectContaining({

@@ -34,11 +34,11 @@ export const createOriginHeader = (
   method,
   requestedHeaders
 ) => {
-  if (!origin) {
-    return {};
-  }
   if (isSimpleRequest(method, requestedHeaders)) {
     return { "Access-Control-Allow-Origin": "*" };
+  }
+  if (!origin) {
+    return {};
   }
   if (allowedOrigins === "*") {
     return { "Access-Control-Allow-Origin": allowedOrigins };
