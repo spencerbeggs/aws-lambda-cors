@@ -37,11 +37,11 @@ export const createOriginHeader = (
   if (isSimpleRequest(method, requestedHeaders)) {
     return { "Access-Control-Allow-Origin": "*" };
   }
-  if (!origin) {
-    return {};
-  }
   if (allowedOrigins === "*") {
     return { "Access-Control-Allow-Origin": allowedOrigins };
+  }
+  if (!origin) {
+    return {};
   }
   let allowedPatterns = allowedOrigins.map(wildcards);
   let isAllowed = allowedPatterns.some(pattern => origin.match(pattern));

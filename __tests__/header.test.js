@@ -27,7 +27,7 @@ describe("Origin header processing", () => {
     );
     expect(header["Access-Control-Allow-Origin"]).toBeUndefined();
   });
-  it("it doesn't set Access-Control-Allow-Origin if not origin is provided", () => {
+  it("it doesn't set Access-Control-Allow-Origin if origin is not provided", () => {
     let header = createOriginHeader(
       undefined,
       ["https://foobar.com"],

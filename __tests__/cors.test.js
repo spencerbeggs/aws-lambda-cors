@@ -150,9 +150,11 @@ describe("Origin header handling", () => {
       foo: "bar"
     });
   });
-  it("it doesn't  return an Access-Control-Allow-Origin header if there is no Origin in the request headers", () => {
+  it("it doesn't  return an Access-Control-Allow-Origin header if there is no Origin in the request headers and allowed origin isn't *", () => {
     delete event.headers["Origin"];
-    let { response } = cors(...args);
+    let { response } = cors(...args, {
+      allowedOrigins: "https://moobar.com"
+    });
     expect(response.headers["Access-Control-Allow-Origin"]).toBeUndefined();
   });
   it("it returns calls back with 400 if if cannot parse the event body into JSON object when the request Content-Type starts with application/json", () => {
