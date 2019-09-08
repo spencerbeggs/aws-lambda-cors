@@ -6,6 +6,9 @@ import {
 import { match, wildcards } from "./utilities";
 
 export const createOriginHeader = (origin, allowedOrigins) => {
+  if (!origin) {
+    return {};
+  }
   if (allowedOrigins === "*") {
     return { "Access-Control-Allow-Origin": allowedOrigins };
   }
@@ -13,8 +16,9 @@ export const createOriginHeader = (origin, allowedOrigins) => {
   let isAllowed = allowedPatterns.some(pattern => origin.match(pattern));
   if (isAllowed) {
     return { "Access-Control-Allow-Origin": origin };
+  } else {
+    return {};
   }
-  return {};
 };
 
 export const createOptionsHeader = (

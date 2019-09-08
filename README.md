@@ -20,15 +20,15 @@ module.export.handler = function() {
 
 The `cors` function will automatically respond with a 204 repsonse when it encounters a `OPTIONS` request with the `Access-Control-Allow-Origin`, `Access-Control-Allow-Headers`, `Access-Control-Allow-Methods` and`Access-Control-Max-Age`. For other types of requests the function returns the regular `event`, `context` and `callback` arguments available to a Lamabda functions you would expect to from a proxy integration.
 
-If the event passed to your function has a `Content-Type` header starting with to `application/json`, the function attempts to parse the event body with `JSON.parse` and return an object; if the body cannot be parsed, the `data` argument with be the raw event body. If the event does not have a body, the data argument will be `null`.
-
 The `response` argument is simply an object with origin headers setup and its `statusCode` propery set to `200`. If you want to send a JSON response, you need to set the body property of the `response` object and send stringified JSON.
+
+If the event passed to your function has a `Content-Type` header starting with to `application/json`, the function attempts to parse the event body with `JSON.parse` and return the resulting JSON as the `data` return value. If the body cannot be parsed into JSON, the funtion will automatically callback with a 400 response.
 
 Note: You can set `module.exports.handler` to `function()` or `async function()` but you cannot set it to `() =>` or `async () =>` because fat arrow functions [do not have bindings to the arguments keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions).
 
 ### Advanced Usage
 
-The `cors` function takes a second `options` argument that is an object, with the following optional properties: `allowedOrigins`, `allowedMethods`, `allowedHeaders` and `maxAge`. The `allowedOrigins`, `allowedMethods` and `allowedHeaders` properties can be passed as either arrays of strings or as a comma-seperated string. `maxAge` is just a string.
+The `cors` function takes a second `options` argument that is an object, with the following optional properties: `allowedOrigins`, `allowedMethods`, `allowedHeaders` and `maxAge`. The `allowedOrigins`, `allowedMethods` and `allowedHeaders` properties can be passed as either arrays of strings or as a comma-seperated string. `maxAge` is just a string. You can also pass these options from `process.env` with the respective vaiable names: `CORS_ALLOWED_ORIGINS`, `CORS_ALLOWED_METHODS`, `CORS_ALLOWED_HEADERS` and `CORS_MAX_AGE`.
 
 ```js
 const { cors } = require("@spencerbeggs/aws-lambda-cors");
