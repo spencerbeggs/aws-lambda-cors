@@ -61,6 +61,7 @@ export const AWS_HEADERS = [
   "CloudFront-Viewer-Country",
   "Upgrade-Insecure-Requests",
   "X-Amz-Cf-Id",
+  "X-Amzn-Trace-Id",
   "X-Forwarded-For",
   "X-Forwarded-Port",
   "X-Forwarded-Proto"

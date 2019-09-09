@@ -79,6 +79,8 @@ export const cors = (event, context, cb, opts = {}) => {
     response.statusCode = 412;
     cb(null, response);
     cb = null;
+  } else {
+    console.log(Object.keys(headers));
   }
 
   return { event, context, callback: cb, response, data, method, METHOD };
