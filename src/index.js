@@ -23,18 +23,7 @@ export const cors = (event, context, cb, opts = {}) => {
     return acc;
   }, {});
   let data = event.body || null;
-  if (
-    headers["content-type"] &&
-    headers["content-type"].startsWith("application/json")
-  ) {
-    try {
-      data = JSON.parse(data);
-    } catch (err) {
-      response.statusCode = 400;
-      cb(null, response);
-      cb = null;
-    }
-  }
+
   let origin = headers.origin;
   Object.assign(
     response.headers,
@@ -59,6 +48,19 @@ export const cors = (event, context, cb, opts = {}) => {
     cb(null, response);
     cb = null;
   }
+  if (
+    headers["content-type"] &&
+    headers["content-type"].startsWith("application/json") &&
+    typeof data === "string"
+  ) {
+    try {
+      data = JSON.parse(data);
+    } catch (err) {
+      response.statusCode = 400;
+      cb(null, response);
+      cb = null;
+    }
+  }
   let methodAllowed = match(method.verb, allowedMethods);
   if (cb && !methodAllowed) {
     response.statusCode = 405;
@@ -79,9 +81,6 @@ export const cors = (event, context, cb, opts = {}) => {
     response.statusCode = 412;
     cb(null, response);
     cb = null;
-  } else {
-    console.log(Object.keys(headers));
   }
-
   return { event, context, callback: cb, response, data, method, METHOD };
 };
