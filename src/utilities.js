@@ -1,10 +1,22 @@
 export const match = (value, collection) =>
-  collection.some(target => value.toLowerCase() === target.toLowerCase());
+  collection.some(target => value.toUpperCase() === target.toUpperCase());
 
 export const matchStart = (value, collection) =>
   collection.some(target =>
-    value.toLowerCase().startsWith(target.toLowerCase())
+    value.toUpperCase().startsWith(target.toUpperCase())
   );
+
+export const wildcards = url => {
+  const urlUnreservedPattern = "[A-Za-z0-9-._~]";
+  const wildcardPattern = urlUnreservedPattern + "*";
+  const parts = url.split("*");
+  const escapeRegex = str => str.replace(/([.?*+^$(){}|[\-\]\\])/g, "\\$1");
+  const escaped = parts.map(escapeRegex);
+  return new RegExp("^" + escaped.join(wildcardPattern) + "$");
+};
+
+import { DEFAULT_ALLOWED_HEADERS, DEFAULT_ALLOWED_METHODS } from "./constants";
+
 export class Method {
   constructor(verb) {
     this.verb = verb.toLowerCase();
@@ -77,3 +89,41 @@ export class Method {
     return this.VERB !== val.toUpperCase();
   }
 }
+
+export const parseOptions = (opts = {}) => {
+  const validKeys = [
+    "allowedOrigins",
+    "allowedMethods",
+    "allowedHeaders",
+    "maxAge"
+  ];
+  for (let key in opts) {
+    if (!validKeys.includes(key)) {
+      delete opts[key];
+    }
+  }
+  let options = Object.assign(
+    {
+      allowedOrigins: process.env.CORS_ALLOWED_ORIGINS || "*",
+      allowedMethods:
+        process.env.CORS_ALLOWED_METHODS || DEFAULT_ALLOWED_METHODS,
+      allowedHeaders:
+        process.env.CORS_ALLOWED_HEADERS || DEFAULT_ALLOWED_HEADERS,
+      maxAge: process.env.CORS_MAX_AGE || "600"
+    },
+    opts
+  );
+  if (
+    typeof options.allowedOrigins === "string" &&
+    options.allowedOrigins !== "*"
+  ) {
+    options.allowedOrigins = options.allowedOrigins.split(",");
+  }
+  if (typeof options.allowedMethods === "string") {
+    options.allowedMethods = options.allowedMethods.split(",");
+  }
+  if (typeof options.allowedHeaders === "string") {
+    options.allowedHeaders = options.allowedHeaders.split(",");
+  }
+  return options;
+};

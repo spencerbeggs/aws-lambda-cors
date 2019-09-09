@@ -1,17 +1,21 @@
 {
   "name": "@spencerbeggs/aws-lambda-cors",
-  "description": "Utility module for basic handling cross-origin resource responses in serverless AWS Lambda functions attaches to API Gateway.",
-  "version": "1.0.3",
+  "description": "Utility module for basic handling of CORS responses for serverless AWS Lambda functions attached to API Gateway.",
+  "version": "2.0.0",
   "main": "src/index.js",
   "license": "MIT",
   "author": "C. Spencer Beggs <spencer@beg.gs>",
   "scripts": {
+    "build": "pika build",
     "jest": "jest",
-    "publish": "pack publish",
-    "package": "pack build",
-    "push": "pack build && pack publish",
+    "publish": "pika publish",
+    "push": "pika build && pika publish",
     "test": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "upgrade-interactive": "npm-check --update"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spencerbeggs/aws-lambda-cors.git"
   },
   "keywords": [
     "AWS",
@@ -45,8 +49,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.5.4",
-    "@babel/preset-env": "^7.5.4",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
     "@pika/pack": "^0.5.0",
     "@pika/plugin-build-node": "^0.6.0",
     "@pika/plugin-bundle-node": "^0.6.0",
@@ -60,5 +64,6 @@
     "jest": "^24.8.0",
     "npm-check": "^5.9.0",
     "prettier": "^1.18.2"
-  }
+  },
+  "dependencies": {}
 }

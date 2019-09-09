@@ -1,44 +1,49 @@
 import {
+  AWS_HEADERS,
   CORS_SAFELISTED_HEADERS,
   FORBIDDEN_HEADERS,
   FORBIDDEN_WILDCARD_HEADERS
 } from "./constants";
-import {
-  createOptionsHeader,
-  createOriginHeader,
-  parseOptions
-} from "./header";
+import { Method, parseOptions } from "./utilities";
+import { createOptionsHeader, createOriginHeader } from "./header";
 import { match, matchStart } from "./utilities";
 
-import { Method } from "./utilities";
-
-export const cors = (event, context, callback, opts = {}) => {
-  let {
-    allowedOrigins,
-    allowedMethods,
-    allowedHeaders,
-    maxAge,
-    strict
-  } = parseOptions(opts);
+export const cors = (event, context, cb, opts = {}) => {
+  let { allowedOrigins, allowedMethods, allowedHeaders, maxAge } = parseOptions(
+    opts
+  );
   let response = {
     statusCode: 200,
     headers: {}
   };
   let method = new Method(event.httpMethod);
   let METHOD = method;
-  let lowerCaseHeaders = Object.keys(event.headers).reduce((acc, header) => {
+  let headers = Object.keys(event.headers).reduce((acc, header) => {
     acc[header.toLowerCase()] = event.headers[header];
     return acc;
   }, {});
   let data = event.body || null;
-  let origin = lowerCaseHeaders.origin;
-  if (origin) {
-    Object.assign(response.headers, createOriginHeader(origin, allowedOrigins));
+  if (
+    headers["content-type"] &&
+    headers["content-type"].startsWith("application/json")
+  ) {
+    try {
+      data = JSON.parse(data);
+    } catch (err) {
+      response.statusCode = 400;
+      cb(null, response);
+      cb = null;
+    }
   }
+  let origin = headers.origin;
+  Object.assign(
+    response.headers,
+    createOriginHeader(origin, allowedOrigins, method.VERB, headers)
+  );
   if (method.options) {
     response.statusCode = 204;
-    let requestedHeaders = lowerCaseHeaders["access-control-request-headers"]
-      ? lowerCaseHeaders["access-control-request-headers"]
+    let requestedHeaders = headers["access-control-request-headers"]
+      ? headers["access-control-request-headers"]
           .split(",")
           .map(value => value.trim())
       : [];
@@ -51,56 +56,30 @@ export const cors = (event, context, callback, opts = {}) => {
         requestedHeaders
       )
     );
-    callback(null, response);
-    callback = null;
-  }
-  if (
-    lowerCaseHeaders["content-type"] &&
-    lowerCaseHeaders["content-type"].startsWith("application/json")
-  ) {
-    try {
-      data = JSON.parse(data);
-    } catch (err) {
-      response.statusCode = 400;
-      callback(null, response);
-      callback = null;
-    }
+    cb(null, response);
+    cb = null;
   }
   let methodAllowed = match(method.verb, allowedMethods);
-  if (callback && !methodAllowed) {
+  if (cb && !methodAllowed) {
     response.statusCode = 405;
-    callback(null, response);
-    callback = null;
+    cb(null, response);
+    cb = null;
   }
   allowedHeaders = allowedHeaders.concat(
     CORS_SAFELISTED_HEADERS,
-    FORBIDDEN_HEADERS
+    FORBIDDEN_HEADERS,
+    AWS_HEADERS
   );
-  let headersAllowed = Object.keys(lowerCaseHeaders)
-    .filter(
-      lowerCaseHeader =>
-        !matchStart(lowerCaseHeader, FORBIDDEN_WILDCARD_HEADERS)
-    )
-    .reduce((acc, header) => {
-      if (acc !== false) {
-        acc = match(header, allowedHeaders);
-      }
-      return acc;
-    }, true);
-  if (callback && !headersAllowed) {
+  let disallowedHeaders = Object.keys(headers).every(
+    header =>
+      match(header, allowedHeaders) ||
+      matchStart(header, FORBIDDEN_WILDCARD_HEADERS)
+  );
+  if (cb && !disallowedHeaders) {
     response.statusCode = 412;
-    callback(null, response);
-    callback = null;
-  }
-  if (
-    callback &&
-    !response.headers.hasOwnProperty("Access-Control-Allow-Origin") &&
-    strict
-  ) {
-    response.statusCode = 412;
-    callback(null, response);
-    callback = null;
+    cb(null, response);
+    cb = null;
   }
 
-  return { event, context, callback, response, data, method, METHOD };
+  return { event, context, callback: cb, response, data, method, METHOD };
 };
