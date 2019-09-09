@@ -53,12 +53,14 @@ export const cors = (event, context, cb, opts = {}) => {
     headers["content-type"].startsWith("application/json") &&
     typeof data === "string"
   ) {
-    try {
-      data = JSON.parse(data);
-    } catch (err) {
-      response.statusCode = 400;
-      cb(null, response);
-      cb = null;
+    if (data) {
+      try {
+        data = JSON.parse(data);
+      } catch (err) {
+        response.statusCode = 400;
+        cb(null, response);
+        cb = null;
+      }
     }
   }
   let methodAllowed = match(method.verb, allowedMethods);
